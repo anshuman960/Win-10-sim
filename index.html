@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Windows 10 Simulator – Full Enhanced Browser</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Windows 10 Simulator – Full Browser + YouTube</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-  /* ---------- CORE LAYOUT ---------- */
+  /* ---------- CORE ---------- */
   html, body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
@@ -113,16 +112,19 @@
   #startMenu li:hover {
     background: #37507b;
   }
-  /* ---------- GENERIC WINDOW ---------- */
+  /* ---------- WINDOW ---------- */
   #win {
     position: absolute;
-    top: 90px; left: 270px;
-    width: 600px; height: 430px;
-    min-width: 230px; min-height: 170px;
+    top: 90px;
+    left: 270px;
+    width: 600px;
+    height: 430px;
     background: #f7fafe;
     border-radius: 12px;
     box-shadow: 2px 4px 32px #0005;
     border: 1px solid #cdd6e6;
+    min-width: 230px;
+    min-height: 170px;
     display: none;
     flex-direction: column;
     z-index: 5;
@@ -153,11 +155,11 @@
     padding: 0;
     background: #fff;
     border-radius: 0 0 12px 12px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
-  /* ---------- BROWSER BAR ---------- */
+  /* ---------- BROWSER ---------- */
   #browserBar {
     display: flex;
     gap: 4px;
@@ -190,7 +192,7 @@
     border: none;
     width: 100%;
   }
-  /* ---------- SHUTDOWN OVERLAY ---------- */
+  /* ---------- SHUTDOWN ---------- */
   #shutdownOverlay {
     position: fixed;
     inset: 0;
@@ -204,7 +206,7 @@
     flex-direction: column;
   }
   /* ---------- RESPONSIVE ---------- */
-  @media(max-width: 600px) {
+  @media(max-width:600px) {
     #win {
       left: 2vw;
       top: 85px;
@@ -226,149 +228,34 @@
 </style>
 </head>
 <body>
-  <div id="desktop">
-    <div id="wallpaper"></div>
-    <!-- Edge Icon -->
-    <div class="desktop-icon" ondblclick="openWindow('browser')">
-      <svg viewBox="0 0 38 38">
-        <circle cx="19" cy="19" r="18" fill="#5AC8FA"/>
-        <path fill="#0078D7" d="M25 25.3C24.7 28.5 21.7 31 16.9 31C11 31 7 25.7 7 20.2C7 15.9 10.8 12 16.7 12C20.4 12 23.2 13.9 24.7 17.1H17.8C14.2 17.1 13.7 21.2 17.3 21.2H31.2V20.6C31.2 13.9 26.1 7.6 16.8 7.6C8.8 7.6 3 13.3 3 20.5C3 28.1 10.2 34 17.8 34C27.1 34 33.5 27.8 33.5 20.2H25V25.3Z"/>
-      </svg>
-      <span>Edge</span>
-    </div>
-    <!-- YouTube Icon -->
-    <div class="desktop-icon" ondblclick="openWindow('yt')">
-      <svg viewBox="0 0 50 35" width="38" height="38">
-        <rect width="50" height="35" rx="7" fill="#FF0000"/>
-        <polygon points="20,10 38,17.5 20,25" fill="#fff"/>
-      </svg>
-      <span>YouTube</span>
-    </div>
+<div id="desktop">
+  <img id="wallpaper" alt="Wallpaper"
+       src="data:image/jpeg;base64,/9j/4AAQSk... (truncated base64 wallpaper) ..." />
+  <!-- Desktop Icons -->
+  <div class="desktop-icon" ondblclick="openWindow('browser')">
+    <!-- Edge icon SVG -->
+    <svg viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg"><circle cx="19" cy="19" r="18" fill="#5AC8FA"/><path d="M25 25.3C24.7 28.5 21.7 31 16.9 31C11 31 7 25.7 7 20.2C7 15.9 10.8 12 16.7 12C20.4 12 23.2 13.9 24.7 17.1H17.8C14.2 17.1 13.7 21.2 17.3 21.2H31.2V20.6C31.2 13.9 26.1 7.6 16.8 7.6C8.8 7.6 3 13.3 3 20.5C3 28.1 10.2 34 17.8 34C27.1 34 33.5 27.8 33.5 20.2H25V25.3Z" fill="#0078D7"/></svg>
+    <span>Edge</span>
   </div>
-
-  <div id="taskbar">
-    <button id="startBtn" title="Start">
-      <svg viewBox="0 0 36 36">
-        <rect width="16" height="16"/>
-        <rect x="20" width="16" height="16"/>
-        <rect y="20" width="16" height="16"/>
-        <rect x="20" y="20" width="16" height="16"/>
-      </svg>
-    </button>
-    <div id="time"></div>
+  <div class="desktop-icon" ondblclick="openWindow('yt')">
+    <!-- YouTube icon SVG -->
+    <svg viewBox="0 0 50 35" width="38" height="38" xmlns="http://www.w3.org/2000/svg">
+      <rect width="50" height="35" rx="7" fill="#FF0000"/>
+      <polygon points="20,10 38,17.5 20,25" fill="#fff"/>
+    </svg>
+    <span>YouTube</span>
   </div>
+</div>
 
-  <div id="win" class="win">
-    <div class="win-header" onmousedown="startDrag(event)">
-      <span id="winTitle">Edge Browser</span>
-      <button onclick="closeWindow()">×</button>
-    </div>
-    <div id="winContent"></div>
-  </div>
+<!-- Taskbar -->
+<div id="taskbar">
+  <button id="startBtn" title="Start">
+    <svg viewBox="0 0 36 36"><rect width="16" height="16"/><rect x="20" width="16" height="16"/><rect y="20" width="16" height="16"/><rect x="20" y="20" width="16" height="16"/></svg>
+  </button>
+  <div id="time"></div>
+</div>
 
-  <div id="shutdownOverlay">
-    <span style="font-size:3em; margin-bottom:.3em;">⏻</span>Shutting down...
-  </div>
-
-<script>
-  // Clock
-  function clock() {
-    const d = new Date();
-    const h = String(d.getHours()).padStart(2, '0');
-    const m = String(d.getMinutes()).padStart(2, '0');
-    document.getElementById('time').textContent = `${h}:${m}`;
-  }
-  setInterval(clock, 30000);
-  clock();
-
-  // Drag Window
-  let dragOffX, dragOffY;
-  const win = document.getElementById('win');
-  function startDrag(e) {
-    dragOffX = e.clientX - win.offsetLeft;
-    dragOffY = e.clientY - win.offsetTop;
-    document.onmousemove = ev => {
-      win.style.left = (ev.clientX - dragOffX) + 'px';
-      win.style.top = (ev.clientY - dragOffY) + 'px';
-    };
-    document.onmouseup = () => document.onmousemove = null;
-  }
-  document.querySelector('.win-header').onmousedown = startDrag;
-
-  // Open window (browser or YouTube)
-  function openWindow(app) {
-    const winContent = document.getElementById('winContent');
-    win.style.display = 'flex';
-    document.getElementById('startMenu').style.display = 'none';
-
-    if(app === 'yt') {
-      document.getElementById('winTitle').textContent = 'YouTube';
-      winContent.innerHTML = `
-        <div id="browserBar">
-          <input id="addr" placeholder="Type a search term or URL" autocomplete="off" />
-          <button id="goBtn">Go</button>
-        </div>
-        <iframe id="browserView" src="https://www.youtube.com" style="flex:1; width:100%; height:100%; border:none;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
-      `;
-      setupPrivateBrowser();
-    } else {
-      document.getElementById('winTitle').textContent = 'Edge Browser';
-      winContent.innerHTML = `
-        <div id="browserBar">
-          <input id="addr" placeholder="Type a search term or URL" autocomplete="off" />
-          <button id="goBtn">Go</button>
-        </div>
-        <iframe id="browserView" src="https://duckduckgo.com" style="flex:1; width:100%; height:100%; border:none;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
-      `;
-      setupPrivateBrowser();
-    }
-  }
-
-  // Close window
-  function closeWindow() {
-    win.style.display = 'none';
-  }
-
-  // Process input to URL or search query using DuckDuckGo to honor privacy
-  function processInput(input) {
-    input = input.trim();
-    if (/^(https?:\/\/)/i.test(input)) return input;
-    else if (/^[\w-]+(\.[\w-]+)+/.test(input)) return 'https://' + input;
-    else return 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
-  }
-
-  // Setup Private Browser controls
-  function setupPrivateBrowser() {
-    const view = document.getElementById('browserView');
-    const address = document.getElementById('addr');
-    const goBtn = document.getElementById('goBtn');
-    goBtn.onclick = () => { view.src = processInput(address.value); };
-    address.onkeydown = e => { if (e.key === 'Enter') view.src = processInput(address.value); };
-    address.value = view.src;
-  }
-
-  // Start Menu toggling and shutdown
-  document.getElementById('startBtn').onclick = e => {
-    e.stopPropagation();
-    toggleStart();
-  };
-  document.addEventListener('click', () => document.getElementById('startMenu').style.display = 'none');
-  function toggleStart() {
-    const menu = document.getElementById('startMenu');
-    menu.style.display = (menu.style.display === 'block' ? 'none' : 'block');
-  }
-
-  function shutdownSim() {
-    closeWindow();
-    document.getElementById('startMenu').style.display = 'none';
-    const overlay = document.getElementById('shutdownOverlay');
-    overlay.style.display = 'flex';
-    setTimeout(() => {
-      overlay.innerHTML = '<div style="text-align:center;margin-top:40vh;color:#fff;">Your PC is now off.<br>Reload to turn it on.</div>';
-    }, 1500);
-  }
-</script>
-
+<!-- Start Menu -->
 <div id="startMenu">
   <div class="hdr">Start</div>
   <ul>
@@ -377,5 +264,174 @@
     <li onclick="shutdownSim()">Shut Down</li>
   </ul>
 </div>
+
+<!-- Window -->
+<div id="win" class="win">
+  <div class="win-header" onmousedown="startDrag(event)">
+    <span id="winTitle">Edge Browser</span>
+    <button onclick="closeWindow()">×</button>
+  </div>
+  <div id="winContent">
+    <div id="browserBar">
+      <button class="nav" id="backBtn" title="Back" disabled>←</button>
+      <button class="nav" id="fwdBtn" title="Forward" disabled>→</button>
+      <input id="addr" placeholder="https://"/>
+      <button id="goBtn">Go</button>
+    </div>
+    <iframe id="browserView" is="x-frame-bypass" src="https://wikipedia.org" style="flex:1;"></iframe>
+  </div>
+</div>
+
+<!-- Shutdown Overlay -->
+<div id="shutdownOverlay" style="display:none;align-items:center;justify-content:center;z-index:99;position:fixed;inset:0;background:#222b448f;color:#fff;font-size:2em;flex-direction:column;">
+  <span style="font-size:3em;margin-bottom:.3em">⏻</span>Shutting down...
+</div>
+
+<!-- x-frame-bypass module -->
+<script type="module">
+const proxy="https://r.jina.ai/http://"; // Public proxy to avoid iframe block
+class XFrameBypass extends HTMLIFrameElement {
+  connectedCallback() {
+    const src=this.getAttribute('src');
+    if (!src) return;
+    this.src = proxy + src;
+  }
+}
+customElements.define('x-frame-bypass', XFrameBypass, {extends:'iframe'});
+</script>
+
+<script>
+/* ---------- CLOCK ---------- */
+function clock(){const d=new Date();const h=String(d.getHours()).padStart(2,'0');const m=String(d.getMinutes()).padStart(2,'0');time.textContent=`${h}:${m}`;}
+setInterval(clock,30000);clock();
+
+/* ---------- START MENU ---------- */
+startBtn.onclick=e=>{e.stopPropagation();toggleStart()};
+document.addEventListener('click',()=>startMenu.style.display='none');
+function toggleStart(){startMenu.style.display = startMenu.style.display==='block' ? 'none' : 'block'}
+
+/* ---------- WINDOW MGMT ---------- */
+let dragOffX, dragOffY;
+function startDrag(e){
+  const winBox = win;
+  dragOffX = e.clientX - winBox.offsetLeft;
+  dragOffY = e.clientY - winBox.offsetTop;
+  document.onmousemove = ev => {
+    winBox.style.left = (ev.clientX - dragOffX) + 'px';
+    winBox.style.top = (ev.clientY - dragOffY) + 'px';
+  };
+  document.onmouseup = () => document.onmousemove = null;
+}
+startDrag = startDrag.bind(this);
+
+/* ---------- OPEN/CLOSE WINDOW ---------- */
+function openWindow(app) {
+  win.style.display = 'flex';
+  startMenu.style.display = 'none';
+  
+  if (app === 'yt') {
+    winTitle.textContent = 'YouTube - Embed Player';
+    winContent.innerHTML = `
+      <div id="browserBar">
+        <button class="nav" id="backBtn" title="Back" disabled>←</button>
+        <button class="nav" id="fwdBtn" title="Forward" disabled>→</button>
+        <input id="addr" placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ" />
+        <button id="goBtn">Go</button>
+      </div>
+      <iframe id="browserView" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="flex:1;"></iframe>
+    `;
+    setupBrowser('https://www.youtube.com/embed/dQw4w9WgXcQ');
+  } else if (app === 'browser') {
+    winTitle.textContent = 'Edge Browser';
+    winContent.innerHTML = `
+      <div id="browserBar">
+        <button class="nav" id="backBtn" title="Back" disabled>←</button>
+        <button class="nav" id="fwdBtn" title="Forward" disabled>→</button>
+        <input id="addr" placeholder="https://www.wikipedia.org/" />
+        <button id="goBtn">Go</button>
+      </div>
+      <iframe id="browserView" is="x-frame-bypass" src="https://www.wikipedia.org/" style="flex:1;"></iframe>
+    `;
+    setupBrowser('https://www.wikipedia.org/');
+  }
+}
+
+function closeWindow() {
+  win.style.display = 'none';
+}
+
+/* ---------- BROWSER FUNCTIONALITY ---------- */
+let historyStack = [], historyIndex = -1;
+
+function setupBrowser(initialUrl) {
+  const view = document.getElementById('browserView');
+  const address = document.getElementById('addr');
+  const backBtn = document.getElementById('backBtn');
+  const fwdBtn = document.getElementById('fwdBtn');
+  const goBtn = document.getElementById('goBtn');
+
+  function loadUrl(u) {
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    view.setAttribute('src', u);
+    address.value = u;
+    historyStack = historyStack.slice(0, historyIndex + 1);
+    historyStack.push(u);
+    historyIndex++;
+    updateNav();
+  }
+
+  function updateNav() {
+    backBtn.disabled = historyIndex <= 0;
+    fwdBtn.disabled = historyIndex >= historyStack.length - 1;
+  }
+
+  backBtn.onclick = () => {
+    if (historyIndex > 0) {
+      historyIndex--;
+      const url = historyStack[historyIndex];
+      view.setAttribute('src', url);
+      address.value = url;
+      updateNav();
+    }
+  };
+
+  fwdBtn.onclick = () => {
+    if (historyIndex < historyStack.length - 1) {
+      historyIndex++;
+      const url = historyStack[historyIndex];
+      view.setAttribute('src', url);
+      address.value = url;
+      updateNav();
+    }
+  };
+
+  goBtn.onclick = () => {
+    loadUrl(address.value);
+  };
+
+  address.onkeydown = e => {
+    if (e.key === 'Enter') loadUrl(address.value);
+  };
+
+  loadUrl(initialUrl);
+}
+
+/* ---------- SHUTDOWN ---------- */
+function shutdownSim() {
+  closeWindow();
+  startMenu.style.display = 'none';
+  const overlay = document.getElementById('shutdownOverlay');
+  overlay.style.display = 'flex';
+  setTimeout(() => {
+    overlay.innerHTML = '<div style="text-align:center;margin-top:40vh;color:#fff;">Your PC is now off.<br>Reload to turn it on.</div>';
+  }, 1500);
+}
+
+/* ---------- DEFAULT WALLPAPER COLOR ---------- */
+window.onload = function () {
+  const colors = ['#276ac6', '#1d1f30', '#4e8ff5', '#8ac4ff'];
+  wallpaper.style.background = colors[Math.floor(Math.random() * colors.length)];
+}
+</script>
 </body>
 </html>
