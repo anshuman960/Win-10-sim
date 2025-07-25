@@ -1,208 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Windows 10 Simulator – Enhanced Browser & Video</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; background: #276ac6;}
-    #desktop { position: relative; width: 100vw; height: 100vh; }
-    #wallpaper { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; pointer-events: none; z-index: 0;}
-    .desktop-icon { width: 76px; display: flex; flex-direction: column; align-items: center; cursor: pointer; color: #fff; text-shadow: 0 1px 7px #000a; margin: 18px 0 0 20px; user-select: none;}
-    .desktop-icon svg { width: 38px; height: 38px; background: #1d6bbb99; border-radius: 7px; padding: 3px; margin-bottom: 4px; }
-    .desktop-icon span { font-size: 13px; text-align: center; }
-    #taskbar { position: absolute; bottom: 0; left: 0; width: 100%; height: 46px; background: rgba(34,43,68,.96); display: flex; align-items: center; z-index: 3; }
-    #startBtn { margin-left: 10px; width: 40px; height: 40px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-    #startBtn svg { width: 32px; height: 32px; fill: #fff; }
-    #time { margin-left: auto; margin-right: 22px; font-size: 18px; color: #ededed; text-shadow: 0 1px 0 #2225; }
-    #startMenu { position: absolute; left: 10px; bottom: 60px; width: 260px; background: rgba(36,39,51,.97); color: #fff; border-radius: 14px 14px 0 0; box-shadow: 0 9px 30px #0007; display: none; z-index: 4; }
-    #startMenu .hdr { padding: 14px 16px 10px 16px; font-weight: 700; font-size: 19px; border-bottom: 1px solid #29466c; background: #223d63a4; border-radius: 14px 14px 0 0;}
-    #startMenu ul { margin: 0; padding: 0; list-style: none;}
-    #startMenu li { padding: 14px 20px; font-size: 16px; cursor: pointer; transition: background 0.18s;}
-    #startMenu li:hover { background: #37507b;}
-    #win { position: absolute; top: 90px; left: 270px; width: 600px; height: 430px; min-width: 230px; min-height:170px; background: #f7fafe; border-radius: 12px; box-shadow: 2px 4px 32px #0005; border: 1px solid #cdd6e6; display: none; flex-direction: column; z-index: 5;}
-    #win .win-header { background: #0078d7; color: #fff; padding: 12px 14px 8px 20px; font-weight: 700; font-size: 17px; cursor: move; user-select: none; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0;}
-    #win .win-header button { background: none; border: none; color: #fff; font-weight: 700; font-size: 19px; cursor: pointer; }
-    #winContent { flex: 1; padding: 0; background: #fff; border-radius: 0 0 12px 12px; overflow: hidden; display: flex; flex-direction: column;}
-    #browserBar { display: flex; gap: 4px; padding: 7px; background: #eef2fa; border-bottom: 1px solid #ccd8e9;}
-    #addr { flex: 1; padding: 6px 8px; border: 1px solid #b7c6dc; border-radius: 4px; font-size: 14px; }
-    #browserBar button { background: #0078d7; border: none; color: #fff; padding: 6px 12px; font-size:14px; border-radius: 4px; cursor:pointer; }
-    #browserBar .nav { width: 32px; padding: 0 6px;}
-    #browserView { flex: 1; border: none; width: 100%;}
-    #shutdownOverlay { position: fixed; inset: 0; background: #222b448f; color: #fff; font-size: 2em; display: none; align-items: center; justify-content: center; z-index: 99; flex-direction: column;}
-    @media(max-width:600px) { #win { left: 2vw; top: 85px; width: 95vw; } .desktop-icon { width: 62px; margin-left: 6px; } .desktop-icon svg { width: 30px; height: 30px; } #startMenu { width: 85vw; left: 0; } }
-  </style>
+<meta charset="UTF-8">
+<title>Win10 Sim — resilient browser + video</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+/* --- trimmed for brevity: keep your original full CSS here --- */
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#276ac6}
+#desktop{position:relative;width:100%;height:100%}
+#wallpaper{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+.desktop-icon{width:76px;display:flex;flex-direction:column;align-items:center;color:#fff;text-shadow:0 1px 7px #000a;margin:18px 0 0 20px;cursor:pointer;user-select:none}
+.desktop-icon svg{width:38px;height:38px;background:#1d6bbb99;border-radius:7px;padding:3px;margin-bottom:4px}
+.desktop-icon span{font-size:13px;text-align:center}
+#taskbar{position:absolute;bottom:0;width:100%;height:46px;background:rgba(34,43,68,.96);display:flex;align-items:center;z-index:3}
+#startBtn{width:40px;height:40px;margin-left:10px;background:none;border:none;display:flex;justify-content:center;align-items:center;cursor:pointer}
+#startBtn svg{width:32px;height:32px;fill:#fff}
+#time{margin-left:auto;margin-right:22px;font-size:18px;color:#ededed;text-shadow:0 1px 0 #2225}
+#startMenu{position:absolute;left:10px;bottom:60px;width:260px;background:rgba(36,39,51,.97);color:#fff;border-radius:14px 14px 0 0;box-shadow:0 9px 30px #0007;display:none;z-index:4}
+#startMenu .hdr{padding:14px 16px 10px;font-weight:700;font-size:19px;border-bottom:1px solid #29466c;background:#223d63a4;border-radius:14px 14px 0 0}
+#startMenu li{padding:14px 20px;font-size:16px;cursor:pointer;transition:background .18s}
+#startMenu li:hover{background:#37507b}
+.win{position:absolute;top:90px;left:270px;width:600px;height:430px;background:#f7fafe;border-radius:12px;box-shadow:2px 4px 32px #0005;border:1px solid #cdd6e6;display:none;flex-direction:column;z-index:5}
+.win-header{background:#0078d7;color:#fff;padding:12px 14px 8px 20px;font-weight:700;font-size:17px;display:flex;justify-content:space-between;align-items:center;cursor:move;border-radius:12px 12px 0 0;user-select:none}
+.win-header button{background:none;border:none;color:#fff;font-size:19px;font-weight:700;cursor:pointer}
+#winContent{flex:1;display:flex;flex-direction:column}
+#browserBar{display:flex;gap:4px;padding:7px;background:#eef2fa;border-bottom:1px solid #ccd8e9}
+#addr{flex:1;padding:6px 8px;border:1px solid #b7c6dc;border-radius:4px;font-size:14px}
+#browserBar button{background:#0078d7;border:none;color:#fff;padding:6px 12px;font-size:14px;border-radius:4px;cursor:pointer}
+#browserBar .nav{width:32px}
+#iframePane{flex:1;border:none;width:100%}
+#shutdownOverlay{position:fixed;inset:0;background:#222b448f;color:#fff;font-size:2em;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:99}
+@media(max-width:600px){.win{left:2vw;top:85px;width:95vw}.desktop-icon{width:62px;margin-left:6px}.desktop-icon svg{width:30px;height:30px}#startMenu{width:85vw;left:0}}
+</style>
 </head>
 <body>
 <div id="desktop">
-  <img id="wallpaper" alt="Wallpaper" src="data:image/jpeg;base64,/9j/4AAQSk...(truncated base64 for brevity)" />
-  <div class="desktop-icon" ondblclick="openWindow('browser')">
+  <img id="wallpaper" src="data:image/jpeg;base64,iVBORw0KGgo..." alt="">
+  <div class="desktop-icon" ondblclick="openApp('browser')">
+    <!-- Edge-like icon -->
     <svg viewBox="0 0 38 38"><circle cx="19" cy="19" r="18" fill="#5AC8FA"/><path d="M25 25.3C24.7 28.5 21.7 31 16.9 31C11 31 7 25.7 7 20.2C7 15.9 10.8 12 16.7 12C20.4 12 23.2 13.9 24.7 17.1H17.8C14.2 17.1 13.7 21.2 17.3 21.2H31.2V20.6C31.2 13.9 26.1 7.6 16.8 7.6C8.8 7.6 3 13.3 3 20.5C3 28.1 10.2 34 17.8 34C27.1 34 33.5 27.8 33.5 20.2H25V25.3Z" fill="#0078D7"/></svg>
     <span>Edge</span>
   </div>
-  <div class="desktop-icon" ondblclick="openWindow('yt')">
-    <svg viewBox="0 0 50 35" width="38" height="38"><rect width="50" height="35" rx="7" fill="#FF0000"/><polygon points="20,10 38,17.5 20,25" fill="#fff"/></svg>
+  <div class="desktop-icon" ondblclick="openApp('yt')">
+    <svg viewBox="0 0 50 35"><rect width="50" height="35" rx="7" fill="#FF0000"/><polygon points="20,10 38,17.5 20,25" fill="#fff"/></svg>
     <span>YouTube</span>
   </div>
 </div>
+
+<!-- taskbar -->
 <div id="taskbar">
-  <button id="startBtn" title="Start">
-    <svg viewBox="0 0 36 36"><rect width="16" height="16"/><rect x="20" width="16" height="16"/><rect y="20" width="16" height="16"/><rect x="20" y="20" width="16" height="16"/></svg>
-  </button>
+  <button id="startBtn"><svg viewBox="0 0 36 36"><rect width="16" height="16"/><rect x="20" width="16" height="16"/><rect y="20" width="16" height="16"/><rect x="20" y="20" width="16" height="16"/></svg></button>
   <div id="time"></div>
 </div>
+
+<!-- start menu -->
 <div id="startMenu">
   <div class="hdr">Start</div>
   <ul>
-    <li onclick="openWindow('browser')">Edge Browser</li>
-    <li onclick="openWindow('yt')">YouTube</li>
+    <li onclick="openApp('browser')">Edge Browser</li>
+    <li onclick="openApp('yt')">YouTube</li>
     <li onclick="shutdownSim()">Shut Down</li>
   </ul>
 </div>
+
+<!-- window -->
 <div id="win" class="win">
   <div class="win-header" onmousedown="startDrag(event)">
-    <span id="winTitle">Edge Browser</span>
-    <button onclick="closeWindow()">×</button>
+    <span id="winTitle"></span><button onclick="closeWin()">×</button>
   </div>
   <div id="winContent"></div>
 </div>
-<div id="shutdownOverlay">
-  <span style="font-size:3em; margin-bottom:.3em;">⏻</span>Shutting down...
-</div>
+
+<!-- shutdown overlay -->
+<div id="shutdownOverlay"><span style="font-size:3em;margin-bottom:.3em">⏻</span>Shutting down…</div>
+
 <script>
-  // Smart URL/search input
-  function getSmartURL(input) {
-    input = input.trim();
-    // Recognize valid URLs (with or without protocol)
-    if (/^https?:\/\//i.test(input)) {
-      return input;
-    }
-    if (/^[\w-]+(\.[\w-]+)+([\/?#].*)?$/i.test(input)) {
-      return "https://" + input;
-    }
-    // Treat as a search query (DuckDuckGo for privacy)
-    return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
-  }
+// -------- utilities --------
+const qs=e=>document.querySelector(e);
+const timeEl=qs('#time');
+function clock(){const d=new Date();timeEl.textContent=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+setInterval(clock,3e4);clock();
+window.onload=()=>{const c=['#276ac6','#1d1f30','#4e8ff5','#8ac4ff'];qs('#wallpaper').style.background=c[Math.random()*c.length|0];};
 
-  // Clock
-  function clock() {
-    const d = new Date(), h = String(d.getHours()).padStart(2, '0'), m = String(d.getMinutes()).padStart(2, '0');
-    document.getElementById('time').textContent = `${h}:${m}`;
-  }
-  setInterval(clock, 30000); clock();
-  let dragOffX, dragOffY;
-  const win = document.getElementById('win');
-  function startDrag(e) {
-    dragOffX = e.clientX - win.offsetLeft;
-    dragOffY = e.clientY - win.offsetTop;
-    document.onmousemove = ev => {
-      win.style.left = (ev.clientX - dragOffX) + 'px';
-      win.style.top = (ev.clientY - dragOffY) + 'px';
-    };
-    document.onmouseup = () => document.onmousemove = null;
-  }
-  document.querySelector('.win-header').onmousedown = startDrag;
+// start menu toggle
+qs('#startBtn').onclick=e=>{e.stopPropagation();qs('#startMenu').style.display=Math.random()<1&&qs('#startMenu').style.display!=='block'?'block':'none';};
+document.addEventListener('click',()=>qs('#startMenu').style.display='none');
 
-  // Open window (Edge browser or YouTube)
-  function openWindow(app) {
-    win.style.display = 'flex';
-    document.getElementById('startMenu').style.display = 'none';
-    const winContent = document.getElementById('winContent');
-    const winTitle = document.getElementById('winTitle');
-    if(app==='yt'){
-      winTitle.textContent = 'YouTube (Piped)';
-      winContent.innerHTML = `
-        <div id="browserBar">
-          <input id="addr" placeholder="Type a video/search or URL" autocomplete="off" />
-          <button id="goBtn">Go</button>
-        </div>
-        <iframe id="browserView" src="https://piped.video/" style="flex:1; width:100%; height:100%; border:none;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
-      `;
-      setupBrowser('https://piped.video/');
-    } else {
-      winTitle.textContent = 'Edge Browser';
-      winContent.innerHTML = `
-        <div id="browserBar">
-          <button class="nav" id="backBtn" title="Back" disabled>←</button>
-          <button class="nav" id="fwdBtn" title="Forward" disabled>→</button>
-          <input id="addr" placeholder="Type a search term or URL" autocomplete="off" />
-          <button id="goBtn">Go</button>
-        </div>
-        <iframe id="browserView" src="https://duckduckgo.com/" style="flex:1; width:100%; height:100%; border:none;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
-      `;
-      setupBrowser('https://duckduckgo.com/');
-    }
-  }
+// drag window
+let sx,sy;function startDrag(e){sx=e.clientX- win.offsetLeft;sy=e.clientY-win.offsetTop;
+document.onmousemove=ev=>{win.style.left=ev.clientX-sx+'px';win.style.top=ev.clientY-sy+'px';};
+document.onmouseup=()=>document.onmousemove=null;}
 
-  function closeWindow() {
-    win.style.display = 'none';
-  }
+// smart URL or search
+function smart(u){u=u.trim();
+if(/^https?:\/\//i.test(u))return u;
+if(/^[\w-]+\.[\w-]+/.test(u))return'http://'+u;
+return'https://duckduckgo.com/html/?q='+encodeURIComponent(u);} // lite HTML version, iframe-friendly[23]
 
-  let historyStack = [], historyIndex = -1;
-  function setupBrowser(initialUrl) {
-    const view = document.getElementById('browserView');
-    const address = document.getElementById('addr');
-    const goBtn = document.getElementById('goBtn');
-    const backBtn = document.getElementById('backBtn');
-    const fwdBtn = document.getElementById('fwdBtn');
+// pick first live Piped instance
+async function getPiped(){const mirrors=['https://piped.video','https://piped.adminforge.de','https://yewtu.be']; // add more if desired
+for(const m of mirrors){
+ try{const r=await fetch(m+'/api/v1/trending');if(r.ok)return m;}catch{}
+}
+return null;}
 
-    function loadUrl(url) {
-      const realUrl = getSmartURL(url);
-      view.setAttribute('src', realUrl);
-      address.value = realUrl;
-      historyStack = historyStack.slice(0, historyIndex +1);
-      historyStack.push(realUrl);
-      historyIndex++;
-      updateNav();
-    }
-    function updateNav() {
-      if(backBtn && fwdBtn){
-        backBtn.disabled = historyIndex <= 0;
-        fwdBtn.disabled = historyIndex >= historyStack.length - 1;
-      }
-    }
-    if(backBtn) backBtn.onclick = () => {
-      if(historyIndex>0) {
-        historyIndex--;
-        const url = historyStack[historyIndex];
-        view.setAttribute('src', url);
-        address.value = url;
-        updateNav();
-      }
-    }
-    if(fwdBtn) fwdBtn.onclick = () => {
-      if(historyIndex<historyStack.length-1){
-        historyIndex++;
-        const url = historyStack[historyIndex];
-        view.setAttribute('src', url);
-        address.value = url;
-        updateNav();
-      }
-    }
-    goBtn.onclick = () => { loadUrl(address.value); };
-    address.onkeydown = e => { if (e.key === 'Enter') loadUrl(address.value); };
-    loadUrl(initialUrl);
-  }
+// window template
+function loadFrame(url,nav){const hdr=`
+  <div id="browserBar">${nav?'<button class="nav" id="backBtn">←</button><button class="nav" id="fwdBtn">→</button>':''}
+    <input id="addr" placeholder="Type URL or search" autocomplete="off">
+    <button id="goBtn">Go</button>
+  </div>
+  <iframe id="iframePane" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" src="${url}"></iframe>`;
+qs('#winContent').innerHTML=hdr;
+setupBrowser(nav,url);}
 
-  document.getElementById('startBtn').onclick = e => { e.stopPropagation(); toggleStart(); };
-  document.addEventListener('click', () => document.getElementById('startMenu').style.display = 'none');
-  function toggleStart() {
-    const menu = document.getElementById('startMenu');
-    menu.style.display = (menu.style.display === 'block' ? 'none' : 'block');
-  }
-  function shutdownSim() {
-    closeWindow();
-    document.getElementById('startMenu').style.display = 'none';
-    const overlay = document.getElementById('shutdownOverlay');
-    overlay.style.display = 'flex';
-    setTimeout(() => {
-      overlay.innerHTML = '<div style="text-align:center;margin-top:40vh;color:#fff;">Your PC is now off.<br>Reload to turn it on.</div>';
-    }, 1500);
-  }
-  window.onload = function() {
-    const colors = ['#276ac6','#1d1f30','#4e8ff5','#8ac4ff'];
-    document.getElementById('wallpaper').style.background = colors[Math.floor(Math.random() * colors.length)];
-  }
+// browser logic
+function setupBrowser(nav,url){
+const view=qs('#iframePane'), addr=qs('#addr'), go=qs('#goBtn');
+let hist=[url], idx=0;
+function navUpdate(){if(nav){qs('#backBtn').disabled=idx<=0;qs('#fwdBtn').disabled=idx>=hist.length-1;}}
+function load(u){u=smart(u);view.src=u;addr.value=u;hist=hist.slice(0,idx+1);hist.push(u);idx++;navUpdate();}
+go.onclick=()=>load(addr.value);addr.onkeydown=e=>e.key==='Enter'&&load(addr.value);
+if(nav){qs('#backBtn').onclick=()=>{if(idx>0){idx--;view.src=hist[idx];addr.value=hist[idx];navUpdate();}};
+qs('#fwdBtn').onclick=()=>{if(idx<hist.length-1){idx++;view.src=hist[idx];addr.value=hist[idx];navUpdate();}}}
+view.onerror=()=>{view.replaceWith(Object.assign(document.createElement('div'),{style:'padding:1em;font:14px/1.4 sans-serif',innerHTML:`This site won't load in an iframe.<br><button onclick="window.open('${addr.value}','_blank')">Open in new tab</button>`}));};
+addr.value=url;navUpdate();}
+
+// open apps
+async function openApp(app){
+qs('#win').style.display='flex';
+if(app==='browser'){qs('#winTitle').textContent='Edge Browser';loadFrame('https://duckduckgo.com/html/',true);}
+else if(app==='yt'){
+ const inst=await getPiped();
+ if(!inst){qs('#winTitle').textContent='YouTube (unavailable)';qs('#winContent').innerHTML='All Piped mirrors are down.';return;}
+ qs('#winTitle').textContent='YouTube (Piped)';
+ loadFrame(inst+'/',false);
+}}
+
+// close / shutdown
+function closeWin(){qs('#win').style.display='none';}
+function shutdownSim(){closeWin();qs('#startMenu').style.display='none';qs('#shutdownOverlay').style.display='flex';
+setTimeout(()=>qs('#shutdownOverlay').innerHTML='<div style="text-align:center;margin-top:40vh">Your PC is off.<br>Reload to restart.</div>',1500);}
+window.shutdownSim=shutdownSim;
 </script>
 </body>
 </html>
