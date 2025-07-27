@@ -1,136 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Windows 10 Simulator</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <style>
-    html, body {
-      margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #276ac6;
-    }
-    #desktop {
-      width: 100vw; height: 100vh; position: relative; overflow: hidden;
-    }
-    #wallpaper {
-      position: absolute; width: 100vw; height: 100vh; left: 0; top: 0;
-      object-fit: cover; z-index: 0; user-select: none; pointer-events: none;
-    }
-    #taskbar {
-      position: absolute; bottom: 0; left: 0; width: 100vw; height: 46px;
-      background: rgba(34,43,68,0.96);
-      display: flex; align-items: center; z-index: 2;
-    }
-    #startBtn {
-      margin-left: 10px; width: 40px; height: 40px;
-      background: none; border: none; padding: 0; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
-    #startBtn svg {
-      width: 32px; height: 32px; display: block;
-    }
-    #desktopIcons {
-      position: absolute; top: 24px; left: 20px; z-index: 1;
-      display: flex; flex-direction: column; gap: 18px;
-    }
-    .icon {
-      display: flex; flex-direction: column; align-items: center;
-      width: 76px; cursor: pointer; user-select: none;
-      color: #fff; text-shadow: 0 1px 7px #000a;
-    }
-    .icon svg {
-      width: 38px; height: 38px; margin-bottom: 4px;
-      background: #1d6bbb99; border-radius: 7px; padding: 3px; box-sizing: content-box;
-    }
-    .icon span {
-      font-size: 13px; margin-top: 0; text-align: center; word-break: break-word;
-    }
-    #startMenu {
-      position: absolute; left: 10px; bottom: 60px; width: 260px;
-      background: rgba(36,39,51,0.97); color: #fff;
-      border-radius: 14px 14px 0 0; box-shadow: 0 9px 30px #0007; z-index: 3;
-      display: none;
-    }
-    #startMenu .header {
-      padding: 14px 16px 10px 16px; font-weight: bold; font-size: 19px;
-      border-bottom: 1px solid #29466c; letter-spacing: 0.03em;
-      background: #223d63a4; border-radius: 14px 14px 0 0;
-    }
-    #startMenu ul {
-      list-style: none; margin: 0; padding: 0;
-    }
-    #startMenu li {
-      padding: 14px 20px; cursor: pointer;
-      transition: background .18s; font-size: 16px;
-    }
-    #startMenu li:hover {
-      background: #37507b;
-    }
+<meta charset="UTF-8" />
+<title>Windows 10 Simulator</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  /* Desktop UI styling */
+  html, body {
+    margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #276ac6;
+  }
+  #desktop {
+    width: 100vw; height: 100vh; position: relative; overflow: hidden;
+  }
+  #wallpaper {
+    position: absolute; width: 100vw; height: 100vh; left: 0; top: 0;
+    object-fit: cover; z-index: 0; user-select: none; pointer-events: none;
+  }
+  #taskbar {
+    position: absolute; bottom: 0; left: 0; width: 100vw; height: 46px;
+    background: rgba(34,43,68,0.96);
+    display: flex; align-items: center; z-index: 2;
+  }
+  #startBtn {
+    margin-left: 10px; width: 40px; height: 40px;
+    background: none; border: none; padding: 0; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #startBtn svg {
+    width: 32px; height: 32px; display: block;
+  }
+  #desktopIcons {
+    position: absolute; top: 24px; left: 20px; z-index: 1;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .icon {
+    display: flex; flex-direction: column; align-items: center;
+    width: 76px; cursor: pointer; user-select: none;
+    color: #fff; text-shadow: 0 1px 7px #000a;
+  }
+  .icon svg {
+    width: 38px; height: 38px; margin-bottom: 4px;
+    background: #1d6bbb99; border-radius: 7px; padding: 3px; box-sizing: content-box;
+  }
+  .icon span {
+    font-size: 13px; margin-top: 0; text-align: center; word-break: break-word;
+  }
+  #startMenu {
+    position: absolute; left: 10px; bottom: 60px; width: 260px;
+    background: rgba(36,39,51,0.97); color: #fff;
+    border-radius: 14px 14px 0 0; box-shadow: 0 9px 30px #0007; z-index: 3;
+    display: none;
+  }
+  #startMenu .header {
+    padding: 14px 16px 10px 16px; font-weight: bold; font-size: 19px;
+    border-bottom: 1px solid #29466c; letter-spacing: 0.03em;
+    background: #223d63a4; border-radius: 14px 14px 0 0;
+  }
+  #startMenu ul {
+    list-style: none; margin: 0; padding: 0;
+  }
+  #startMenu li {
+    padding: 14px 20px; cursor: pointer;
+    transition: background .18s; font-size: 16px;
+  }
+  #startMenu li:hover {
+    background: #37507b;
+  }
+  #window {
+    display: none; flex-direction: column; position: absolute;
+    top: 90px; left: 270px; width: 440px; height: 330px;
+    background: #f7fafe; border-radius: 12px;
+    box-shadow: 2px 4px 32px #0005; z-index: 10;
+    border: 1px solid #cdd6e6;
+    min-width: 230px; min-height: 170px;
+    transition: all 0.3s ease;
+  }
+  #window.fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    z-index: 9999 !important;
+  }
+  #window .win-header {
+    background: #0078d7; color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px 8px 20px; border-radius: 12px 12px 0 0;
+    font-weight: bold; font-size: 17px;
+  }
+  #window .win-header button {
+    background: none; border: none; color: #fff;
+    font-size: 18px; cursor: pointer; font-weight: bold;
+    margin-left: 10px;
+  }
+  #windowContent {
+    flex: 1; padding: 0; color: #111b3a;
+    background: #f6fafd; border-radius: 0 0 12px 12px;
+    overflow: auto; font-size: 15px;
+    display: flex; flex-direction: column;
+  }
+  #time {
+    margin-left: auto; margin-right: 22px;
+    font-size: 18px; letter-spacing: 0.03em;
+    color: #ededed; text-shadow: 0 1px 0 #2225;
+  }
+  @media (max-width: 600px) {
     #window {
-      display: none; flex-direction: column; position: absolute;
-      top: 90px; left: 270px; width: 440px; height: 330px;
-      background: #f7fafe; border-radius: 12px;
-      box-shadow: 2px 4px 32px #0005; z-index: 10;
-      border: 1px solid #cdd6e6;
-      min-width: 230px; min-height: 170px;
-      transition: all 0.3s ease;
+      left: 2vw; width: 95vw; top: 85px;
+      min-width: 160px; min-height: 80px;
     }
-    #window.fullscreen {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      z-index: 9999 !important;
-    }
-    #window .win-header {
-      background: #0078d7; color: #fff;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 20px 8px 20px; border-radius: 12px 12px 0 0;
-      font-weight: bold; font-size: 17px;
-    }
-    #window .win-header button {
-      background: none; border: none; color: #fff;
-      font-size: 18px; cursor: pointer; font-weight: bold;
-      margin-left: 10px;
-    }
-    #windowContent {
-      flex: 1; padding: 0; color: #111b3a;
-      background: #f6fafd; border-radius: 0 0 12px 12px;
-      overflow: auto; font-size: 15px;
-      display: flex; flex-direction: column;
-    }
-    #time {
-      margin-left: auto; margin-right: 22px;
-      font-size: 18px; letter-spacing: 0.03em;
-      color: #ededed; text-shadow: 0 1px 0 #2225;
-    }
-    @media (max-width: 600px) {
-      #window {
-        left: 2vw; width: 95vw; top: 85px;
-        min-width: 160px; min-height: 80px;
-      }
-      #startMenu { left: 0; width: 85vw; }
-      #desktopIcons { left: 6px; gap: 10px; }
-      .icon { width: 62px; }
-      .icon svg { width: 30px; height: 30px; }
-    }
-    /* Scrollbar for search results */
-    #viewPane {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(0,0,0,0.2) transparent;
-    }
-    #viewPane::-webkit-scrollbar {
-      width: 7px;
-    }
-    #viewPane::-webkit-scrollbar-thumb {
-      background-color: rgba(0,0,0,0.2);
-      border-radius: 10px;
-    }
-  </style>
+    #startMenu { left: 0; width: 85vw; }
+    #desktopIcons { left: 6px; gap: 10px; }
+    .icon { width: 62px; }
+    .icon svg { width: 30px; height: 30px; }
+  }
+  /* Scrollbar for search results */
+  #viewPane {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.2) transparent;
+  }
+  #viewPane::-webkit-scrollbar {
+    width: 7px;
+  }
+  #viewPane::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 10px;
+  }
+</style>
 </head>
 <body>
   <div id="desktop">
@@ -228,6 +229,14 @@
               No card needed. <a href="https://developers.google.com/custom-search/v1/introduction" target="_blank" rel="noopener">Get free keys here</a>. Not stored.
             </div>
           </div>
+          <div id="ytKeyPrompt" style="padding:11px;background:#fff1f1;border-radius:9px;margin-bottom:8px;display:none">
+            <b>YouTube Data API v3 key:</b>
+            <br><label><input id="ytApiInput" style="width:400px;padding:4px;font-size:13px;" placeholder="Enter your YouTube API key"></label>
+            <button id="ytKeySave" style="padding:6px 14px;margin-left:8px;background:#e52d27;color:#fff;border:none;border-radius:6px;cursor:pointer;">Use</button>
+            <div style="font-size:13px;color:#a33;margin-top:4px;">
+              Get one free from <a href="https://console.developers.google.com/apis/api/youtube.googleapis.com/overview" target="_blank" rel="noopener">Google API Console</a>. Not stored.
+            </div>
+          </div>
           <div id="browserBar" style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
             <button id="backBtn" title="Back" disabled>←</button>
             <button id="fwdBtn"  title="Forward" disabled>→</button>
@@ -255,8 +264,7 @@
             'https://invidious.kavin.rocks',
             'https://yewtu.be',
             'https://piped.video',
-            'https://piped.kavin.rocks',
-            'https://invidious.f5.si'
+            'https://piped.kavin.rocks'
           ];
           let host = null;
           for (let url of mirrors) {
@@ -309,9 +317,11 @@
     function closeWindow() {
       document.getElementById('window').style.display = 'none';
     }
+
     document.querySelectorAll('.icon').forEach(elem => {
       elem.ondblclick = function() { this.click(); };
     });
+
     function shutdownSim() {
       document.getElementById('window').style.display = 'none';
       document.getElementById('startMenu').style.display = 'none';
@@ -327,28 +337,41 @@
       document.getElementById('wallpaper').style.background = colors[Math.floor(Math.random() * colors.length)];
     };
 
-    // --- Google Mini Browser setup ---
-    let GOOGLE_KEY = "",
-      GOOGLE_CX = "",
-      hist = [],
-      idx = -1,
-      currentTab = "web";
+    // --- Google Mini Browser setup and YouTube video playback ---
 
+    let GOOGLE_KEY = "",
+        GOOGLE_CX = "",
+        YOUTUBE_API_KEY = "",
+        hist = [],
+        idx = -1,
+        currentTab = "web";
+
+    // Google key input handler
     function promptGoogleKey() {
       const prompt = document.getElementById('googleKeyPrompt');
       prompt.style.display = "block";
-      document.getElementById('gKeySave').onclick = function() {
+      document.getElementById('gKeySave').onclick = function () {
         GOOGLE_KEY = document.getElementById('gApiInput').value.trim();
         GOOGLE_CX = document.getElementById('gCxInput').value.trim();
         prompt.style.display = (GOOGLE_KEY && GOOGLE_CX) ? "none" : "block";
-      }
+      };
+    }
+
+    // YouTube Data API key input handler
+    function promptYouTubeKey() {
+      const prompt = document.getElementById('ytKeyPrompt');
+      prompt.style.display = "block";
+      document.getElementById('ytKeySave').onclick = function () {
+        YOUTUBE_API_KEY = document.getElementById('ytApiInput').value.trim();
+        prompt.style.display = YOUTUBE_API_KEY ? "none" : "block";
+      };
     }
 
     function buildGoogleUrl(q, tab) {
       let params = [
         "key=" + encodeURIComponent(GOOGLE_KEY),
         "cx=" + encodeURIComponent(GOOGLE_CX),
-        "q=" + encodeURIComponent(q),
+        "q=" + encodeURIComponent(q)
       ];
       if (tab === "images") params.push("searchType=image");
       if (tab === "news") params.push("num=10", "gl=us", "sort=date", "dateRestrict=d1");
@@ -359,7 +382,7 @@
     async function googleSearch(q, tab) {
       if (!GOOGLE_KEY || !GOOGLE_CX) {
         promptGoogleKey();
-        throw "API key/CX missing";
+        throw "Google API key/CX missing";
       }
       const url = buildGoogleUrl(q, tab || "web");
       const r = await fetch(url);
@@ -367,6 +390,7 @@
       return (await r.json()).items || [];
     }
 
+    // Extract YouTube video id from URL
     function extractYouTubeID(url) {
       try {
         const u = new URL(url);
@@ -380,47 +404,33 @@
       return null;
     }
 
-    async function getWorkingInvidious(videoId) {
-      try {
-        const res = await fetch("https://api.invidious.io/instances.json?sort_by=type,health");
-        const instances = await res.json();
-        for (const [url, info] of instances) {
-          if (info.type === "https" && info.api && info.health > 85) {
-            try {
-              const apiRes = await fetch(`${url}/api/v1/videos/${videoId}`);
-              if (apiRes.ok) {
-                const data = await apiRes.json();
-                if (
-                  data &&
-                  Array.isArray(data.adaptiveFormats) &&
-                  data.adaptiveFormats.length
-                ) {
-                  return { host: url, formats: data.adaptiveFormats };
-                }
-              }
-            } catch {
-              continue;
-            }
-          }
-        }
-      } catch {
-        // Network or fetch error
+    // Fetch YouTube video info from YouTube Data API
+    async function fetchYouTubeVideoInfo(videoId) {
+      if (!YOUTUBE_API_KEY) {
+        promptYouTubeKey();
+        throw "YouTube API key missing";
       }
-      return null;
+      const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet&key=${YOUTUBE_API_KEY}`;
+      const res = await fetch(url);
+      if (!res.ok) throw "YouTube API error " + res.status;
+      const json = await res.json();
+      if (!json.items || !json.items.length) throw "Video not found";
+      return json.items[0];
     }
 
+    // Check if URL looks like media file
     function isMediaUrl(url) {
       return /\.(mp4|webm|ogg|mp3|wav|m4a|flac|aac|mov|avi)$/i.test(url);
     }
 
     function setupGoogleMiniBrowser() {
       const addr = document.getElementById("addr"),
-        backBtn = document.getElementById("backBtn"),
-        fwdBtn = document.getElementById("fwdBtn"),
-        goBtn = document.getElementById("goBtn"),
-        view = document.getElementById("viewPane"),
-        fullScreenBtn = document.getElementById("fullScreenBtn"),
-        win = document.getElementById("window");
+          backBtn = document.getElementById("backBtn"),
+          fwdBtn = document.getElementById("fwdBtn"),
+          goBtn = document.getElementById("goBtn"),
+          view = document.getElementById("viewPane"),
+          fullScreenBtn = document.getElementById("fullScreenBtn"),
+          win = document.getElementById("window");
       const tabs = document.querySelectorAll(".g-tab");
 
       hist = [];
@@ -491,45 +501,93 @@
           await tryEmbed(val.startsWith("http") ? val : "https://" + val);
           return;
         }
-        searchTab(val, currentTab);
+        await searchTab(val, currentTab);
       }
 
       async function searchTab(q, tab) {
         view.innerHTML = "<div style='padding:14px'>Loading…</div>";
         try {
-          const results = await googleSearch(q, tab);
-          renderGoogleResults(results, tab);
+          if (tab === "videos") {
+            if (!YOUTUBE_API_KEY) {
+              promptYouTubeKey();
+              view.innerHTML = `<div style="padding:12px;font-size:15px;color:#a33">YouTube API key required to search videos.</div>`;
+              return;
+            }
+            const ytResults = await youtubeSearch(q);
+            renderYouTubeResults(ytResults);
+          } else {
+            const results = await googleSearch(q, tab);
+            renderGoogleResults(results, tab);
+          }
         } catch (e) {
-          view.innerHTML = `<div style="padding:12px;font-size:15px">Search failed: ${e}</div>`;
+          view.innerHTML = `<div style="padding:12px;font-size:15px;color:#a33">Search failed: ${e}</div>`;
         }
       }
 
+      async function youtubeSearch(query) {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
+        const r = await fetch(url);
+        if (!r.ok) throw "YouTube search error " + r.status;
+        const json = await r.json();
+        return json.items || [];
+      }
+
+      function renderYouTubeResults(arr) {
+        const view = document.getElementById("viewPane");
+        view.innerHTML = "";
+        if (!arr.length) {
+          view.innerHTML = "<div style='padding:14px'>No results.</div>";
+          return;
+        }
+        arr.forEach((item) => {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          // Thumbnail
+          const thumbUrl = (item.snippet.thumbnails.medium || item.snippet.thumbnails.default).url;
+          // Container div
+          const container = document.createElement("div");
+          container.style.marginBottom = "12px";
+          container.style.cursor = "pointer";
+          container.style.display = "flex";
+          container.style.alignItems = "center";
+          // Thumbnail img
+          const img = document.createElement("img");
+          img.src = thumbUrl;
+          img.alt = title;
+          img.style.width = "120px";
+          img.style.height = "70px";
+          img.style.objectFit = "cover";
+          img.style.marginRight = "12px";
+          // Title
+          const titleElem = document.createElement("div");
+          titleElem.textContent = title;
+          titleElem.style.fontWeight = "bold";
+          titleElem.style.flex = "1";
+          // Click loads video embed
+          container.onclick = function () {
+            embedYouTubeVideo(videoId);
+          };
+          container.appendChild(img);
+          container.appendChild(titleElem);
+          view.appendChild(container);
+        });
+      }
+
+      function embedYouTubeVideo(videoId) {
+        const view = document.getElementById("viewPane");
+        // Youtube no-cookie embed URL with autoplay and minimal controls
+        const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&playsinline=1&autoplay=1`;
+        view.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:360px;border:none;border-radius:6px;" sandbox="allow-scripts allow-forms allow-popups allow-presentation"></iframe>`;
+      }
+
       async function tryEmbed(url) {
+        const view = document.getElementById("viewPane");
         view.innerHTML = "";
 
+        // Check YouTube video ID in URL for direct embed
         const vidId = extractYouTubeID(url);
         if (vidId) {
-          view.innerHTML = `<div style="padding:1em">Loading video...</div>`;
-          const videoInfo = await getWorkingInvidious(vidId);
-          if (videoInfo) {
-            let mp4Stream = videoInfo.formats.find(
-              (f) => f.mimeType && f.mimeType.includes("video/mp4")
-            );
-            if (!mp4Stream) mp4Stream = videoInfo.formats[0];
-            if (mp4Stream && mp4Stream.url) {
-              const video = document.createElement("video");
-              video.controls = true;
-              video.autoplay = true;
-              video.style.width = "100%";
-              video.style.height = "auto";
-              video.src = mp4Stream.url;
-              view.innerHTML = "";
-              view.appendChild(video);
-              return;
-            }
-          }
-          view.innerHTML = `<div style="padding:1em;color:#a33">Failed to load video from Invidious.<br>
-          <button onclick="window.open('${url}', '_blank')">Open in new tab</button></div>`;
+          embedYouTubeVideo(vidId);
           return;
         }
 
@@ -552,6 +610,7 @@
           return;
         }
 
+        // Iframe fallback
         const iframe = document.createElement("iframe");
         iframe.src = url;
         iframe.style.cssText = "width:100%;height:255px;border:none;border-radius:5px";
@@ -576,6 +635,7 @@
       }
 
       function renderGoogleResults(arr, tab) {
+        const view = document.getElementById("viewPane");
         view.innerHTML = "";
         if (!arr.length) {
           view.innerHTML = "<div style='padding:14px'>No results.</div>";
@@ -588,7 +648,7 @@
             img.alt = r.title;
             img.style.maxWidth = "95%";
             img.style.margin = "3px 0 13px 0";
-            view.append(img);
+            view.appendChild(img);
           } else if (tab === "videos" && r.link) {
             let a = document.createElement("a");
             a.href = "#";
@@ -598,11 +658,11 @@
               tryEmbed(r.link);
             };
             a.style.cssText = "display:block;font-weight:bold;margin:6px 0";
-            view.append(a);
+            view.appendChild(a);
             let s = document.createElement("span");
             if (r.displayLink) s.textContent = " " + r.displayLink;
-            view.append(s);
-            view.append(document.createElement("br"));
+            view.appendChild(s);
+            view.appendChild(document.createElement("br"));
           } else {
             let a = document.createElement("a");
             a.href = "#";
@@ -612,15 +672,16 @@
               tryEmbed(r.link);
             };
             a.style.cssText = "display:block;font-weight:bold;margin:6px 0";
-            view.append(a);
+            view.appendChild(a);
             let p = document.createElement("p");
             p.textContent = r.snippet || r.link;
             p.style.margin = "0 0 10px 0";
-            view.append(p);
+            view.appendChild(p);
           }
         });
       }
 
+      // Initialize input
       addr.value = "";
       addr.focus();
     }
