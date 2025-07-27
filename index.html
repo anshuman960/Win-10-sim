@@ -2,106 +2,317 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Win10 Sim – Working Browser & YouTube</title>
+  <title>Windows 10 Simulator</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    /* --- Minimal CSS for clarity, add your UI styles --- */
-    body, html { margin: 0; height: 100vh; width: 100vw; font-family: 'Segoe UI', Arial, sans-serif; background: #222d44;}
-    .browser-window { width: 600px; height: 440px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 24px #0008; overflow: hidden; display:flex; flex-direction: column;}
-    .browser-bar { background: #eef2fa; padding: 10px; display: flex; gap: 7px; align-items: center;}
-    .browser-bar input { flex: 1; font-size: 15px; padding: 8px 10px; border-radius: 5px; border: 1px solid #bbb; }
-    .browser-bar button { background: #016ad2; border: none; color: #fff; font-size: 15px; padding: 8px 20px; border-radius: 5px; cursor: pointer;}
-    #iframePane { flex: 1; border: none; width: 100%; }
-    .yt-btn { margin: 25px auto 0 auto; display: block; color: #fff; background: #ff0000; font-size: 1.1em; border: none; border-radius: 6px; padding: 10px 26px; cursor: pointer;}
-    .errbox { padding: 2em 1em; color: #b12; font-size: 1.07em;}
+    html, body {margin: 0;padding: 0;width: 100vw;height: 100vh;overflow: hidden;font-family: 'Segoe UI', Arial, sans-serif;background: #276ac6;}
+    #desktop {width: 100vw;height: 100vh;position: relative;overflow: hidden;}
+    #wallpaper {position: absolute;width: 100vw;height: 100vh;left: 0;top: 0;object-fit: cover;z-index: 0;user-select: none;pointer-events: none;}
+    #taskbar {position: absolute;bottom: 0;left: 0;width: 100vw;height: 46px;background: rgba(34,43,68,0.96);display: flex;align-items: center;z-index: 2;}
+    #startBtn {margin-left: 10px;width: 40px;height: 40px;background: none;border: none;padding: 0;cursor: pointer;display: flex;align-items: center;justify-content: center;}
+    #startBtn svg {width: 32px;height: 32px;display: block;}
+    #desktopIcons {position: absolute;top: 24px;left: 20px;z-index: 1;display: flex;flex-direction: column;gap: 18px;}
+    .icon {display: flex;flex-direction: column;align-items: center;width: 76px;cursor: pointer;user-select: none;color: #fff;text-shadow: 0 1px 7px #000a;}
+    .icon svg {width: 38px;height: 38px;margin-bottom: 4px;background: #1d6bbb99;border-radius: 7px;padding: 3px;box-sizing: content-box;}
+    .icon span {font-size: 13px;margin-top: 0;text-align: center;word-break: break-word;}
+    #startMenu {position: absolute;left: 10px;bottom: 60px;width: 260px;background: rgba(36,39,51,0.97);color: #fff;border-radius: 14px 14px 0 0;box-shadow: 0 9px 30px #0007;z-index: 3;display: none;}
+    #startMenu .header {padding: 14px 16px 10px 16px;font-weight: bold;font-size: 19px;border-bottom: 1px solid #29466c;letter-spacing: 0.03em;background: #223d63a4;border-radius: 14px 14px 0 0;}
+    #startMenu ul {list-style: none;margin: 0;padding: 0;}
+    #startMenu li {padding: 14px 20px;cursor: pointer;transition: background .18s;font-size: 16px;}
+    #startMenu li:hover {background: #37507b;}
+    #window {display: none;flex-direction: column;position: absolute;top: 90px;left: 270px;width: 440px;height: 330px;background: #f7fafe;border-radius: 12px;box-shadow: 2px 4px 32px #0005;z-index: 10;border: 1px solid #cdd6e6;min-width: 230px;min-height: 170px;}
+    #window .win-header {background: #0078d7;color: #fff;display: flex;align-items: center;justify-content: space-between;padding: 12px 20px 8px 20px;border-radius: 12px 12px 0 0;font-weight: bold;font-size: 17px;}
+    #window .win-header button {background: none;border: none;color: #fff;font-size: 18px;cursor: pointer;font-weight: bold;margin-left: 10px;}
+    #windowContent {flex: 1;padding: 0;color: #111b3a;background: #f6fafd;border-radius: 0 0 12px 12px;overflow: auto;font-size: 15px;display: flex;flex-direction: column;}
+    #time {margin-left: auto;margin-right: 22px;font-size: 18px;letter-spacing: 0.03em;color: #ededed;text-shadow: 0 1px 0 #2225;}
+    @media (max-width: 600px) {
+      #window {left: 2vw;width: 95vw;top: 85px;min-width: 160px;min-height: 80px;}
+      #startMenu { left: 0; width: 85vw;}
+      #desktopIcons { left: 6px; gap: 10px;}
+      .icon { width: 62px;}
+      .icon svg { width: 30px; height: 30px;}
+    }
   </style>
 </head>
 <body>
-  <div class="browser-window">
-    <div class="browser-bar">
-      <input id="browserInput" type="text" placeholder="Type URL or search… (try: openai or youtube.com)" />
-      <button onclick="doSearch()">Go</button>
-      <button onclick="ytMode()" style="background:#ff0000;">YouTube</button>
+  <div id="desktop">
+    <!-- Wallpaper -->
+    <img id="wallpaper" alt="Wallpaper" src="data:image/jpeg;base64,/9j/4AAQSkZJRg...(truncated base64)" />
+    <!-- Desktop Icons -->
+    <div id="desktopIcons">
+      <div class="icon" onclick="openWindow('explorer')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"><rect x="2" y="10" width="32" height="20" rx="3" fill="#ffcc4d"/><rect x="2" y="14" width="32" height="16" rx="3" fill="#ffe066"/><rect x="2" y="10" width="32" height="8" rx="3" fill="#f9d923"/></svg>
+        <span>Explorer</span>
+      </div>
+      <div class="icon" onclick="openWindow('browser')">
+        <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="19" cy="19" r="18" fill="#5AC8FA"/><path d="M25 25.3C24.7 28.5 21.7 31 16.9 31C11 31 7 25.7 7 20.2C7 15.9 10.8 12 16.7 12C20.4 12 23.2 13.9 24.7 17.1H17.8C14.2 17.1 13.7 21.2 17.3 21.2H31.2V20.6C31.2 13.9 26.1 7.6 16.8 7.6C8.8 7.6 3 13.3 3 20.5C3 28.1 10.2 34 17.8 34C27.1 34 33.5 27.8 33.5 20.2H25V25.3Z" fill="#0078D7"/></svg>
+        <span>Edge</span>
+      </div>
+      <div class="icon" onclick="openWindow('yt')">
+        <svg viewBox="0 0 50 35"><rect width="50" height="35" rx="7" fill="#FF0000"/><polygon points="20,10 38,17.5 20,25" fill="#fff"/></svg>
+        <span>YouTube</span>
+      </div>
+      <div class="icon" onclick="openWindow('settings')">
+        <svg viewBox="0 0 48 48" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18" fill="#eee"/><circle cx="24" cy="24" r="7" fill="#0078D7"/><rect x="12" y="23" width="24" height="2" rx="1" fill="#0078D7"/><rect x="23" y="12" width="2" height="24" rx="1" fill="#0078D7"/></svg>
+        <span>Settings</span>
+      </div>
     </div>
-    <iframe id="iframePane" src="https://lite.duckduckgo.com/lite/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+    <!-- Taskbar -->
+    <div id="taskbar">
+      <button id="startBtn" title="Start">
+        <svg viewBox="0 0 36 36"><rect x="0" y="0" width="16" height="16" fill="#fff"/><rect x="20" y="0" width="16" height="16" fill="#fff"/><rect x="0" y="20" width="16" height="16" fill="#fff"/><rect x="20" y="20" width="16" height="16" fill="#fff"/></svg>
+      </button>
+      <div id="time"></div>
+    </div>
+    <!-- Start Menu -->
+    <div id="startMenu">
+      <div class="header">Start</div>
+      <ul>
+        <li onclick="openWindow('explorer')">File Explorer</li>
+        <li onclick="openWindow('browser')">Edge Browser</li>
+        <li onclick="openWindow('yt')">YouTube</li>
+        <li onclick="openWindow('settings')">Settings</li>
+        <li onclick="shutdownSim()">Shut Down</li>
+      </ul>
+    </div>
+    <!-- Window -->
+    <div id="window">
+      <div class="win-header">
+        <span id="winTitle"></span>
+        <button onclick="closeWindow()" title="Close">&times;</button>
+      </div>
+      <div id="windowContent"></div>
+    </div>
   </div>
+  <!-- Shutdown overlay -->
+  <div id="shutdownOverlay" style="display:none;position:fixed;z-index:99;top:0;left:0;width:100vw;height:100vh;background:#222b448f;justify-content:center;align-items:center;font-size:2em;color:#fff;">
+    <div>
+      <span style="display:block;font-size:3em;margin-bottom:0.5em;">&#x23FB;</span>
+      <div>Shutting down...</div>
+    </div>
+  </div>
+<script>
+  // Time
+  function clockTick() {
+    let now = new Date(), h = String(now.getHours()).padStart(2,'0'), m = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('time').textContent = `${h}:${m}`;
+  }
+  setInterval(clockTick, 30000); clockTick();
+  // Start menu
+  const startBtn = document.getElementById('startBtn'), startMenu = document.getElementById('startMenu');
+  startBtn.onclick = function(e){ e.stopPropagation(); startMenu.style.display = (startMenu.style.display==='block') ? 'none':'block'; };
+  document.addEventListener('click', function(e) {
+    if (!startMenu.contains(e.target) && e.target!==startBtn) startMenu.style.display = 'none';
+  });
+  // Windowing
+  function openWindow(which) {
+    let win = document.getElementById('window');
+    let winContent = document.getElementById('windowContent');
+    let winTitle = document.getElementById('winTitle');
+    document.getElementById('startMenu').style.display='none';
+    win.style.display = 'flex';
 
-  <script>
-    // Best public, always-iframe-safe DuckDuckGo: /lite/
-    const DUCK = 'https://lite.duckduckgo.com/lite/?q=';
-
-    // List of tested, working embeddable Piped mirrors as of July 2025
-    const PIPED_INSTANCES = [
-      'https://piped.video',
-      'https://piped.adminforge.de',
-      'https://piped.mint.lgbt',
-      'https://yewtu.be'
-    ];
-
-    let ytCurrent = null; // Currently selected YouTube mirror
-
-    // Helper: Smartly parse input (URL or search)
-    function smartURL(input) {
-      input = (input || '').trim();
-      if (!input) return DUCK;
-      // If looks like a full URL (with protocol)
-      if (/^https?:\/\//i.test(input)) return input;
-      // If likely a domain
-      if (/^[\w-]+(\.[\w-]+)+([\/?#].*)?$/i.test(input)) return 'https://' + input;
-      // If 'youtube' or 'yt' keyword, go to "YouTube" mode
-      if (/^(youtube|yt)$/i.test(input)) return ytCurrent || PIPED_INSTANCES[0];
-      // Else, treat as search
-      return DUCK + encodeURIComponent(input);
+    if (which === 'browser') {
+      winTitle.textContent = "Web Browser";
+      winContent.innerHTML = `
+        <div id="apiPrompt" style="padding:12px;background:#fff5e1;border-radius:10px;margin-bottom:8px;display:none">
+          <b>Enter your <a href="https://search.brave.com/api" target="_blank" rel="noopener" style="color:#016ad2">Brave Search API key</a>:</b><br>
+          <input id="apiKeyInput" type="password" style="width:65%;padding:7px;font-size:14px;border-radius:5px;border:1px solid #bbb;">
+          <button id="apiKeySave" style="margin-left:8px;padding:6px 14px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer;">
+            Use Key</button>
+          <div style="font-size:13px;color:#A75;margin-top:5px;">
+            Your API key is only used to fetch search results and is <b>never stored or sent anywhere else</b>.
+          </div>
+        </div>
+        <div id="browserBar" style="display:flex;gap:6px;margin-bottom:6px">
+          <button id="backBtn" title="Back" disabled>←</button>
+          <button id="fwdBtn"  title="Forward" disabled>→</button>
+          <input  id="addr" style="flex:1;padding:6px 9px;font-size:14px" placeholder="Type URL or search…">
+          <button id="goBtn"  style="padding:6px 16px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer">Go</button>
+        </div>
+        <div id="viewPane" style="flex:1;overflow:hidden;border-radius:6px;box-shadow:0 2px 12px #0003;"></div>`;
+      showApiPromptIfNeeded();
+      initMiniBrowser();
+      return;
     }
+    if (which === 'yt') {
+      winTitle.textContent = "YouTube (Piped)";
+      winContent.innerHTML = `<div id="ytView" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><span>Loading…</span></div>`;
+      (async function(){
+        const pipedList = [
+          'https://piped.video','https://piped.adminforge.de','https://yewtu.be'
+        ];
+        let host = null;
+        for(let url of pipedList){
+          try { await fetch(url+'/favicon.ico',{mode:'no-cors'}); host = url; break;} catch{}
+        }
+        let ytView = document.getElementById('ytView');
+        if(host){
+          ytView.innerHTML = `<iframe src="${host}/" style="width:100%;height:99%;border:0;border-radius:9px;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`;
+        }else{
+          ytView.innerHTML = `<span>No Piped mirrors up. <button onclick="window.open('https://youtube.com','_blank')">Open YouTube</button></span>`;
+        }
+      })();
+      return;
+    }
+    switch(which){
+      case 'explorer':
+        winTitle.textContent = "File Explorer";
+        winContent.innerHTML = `<b>Desktop</b><hr>
+        <div><svg height="28" width="28" style="vertical-align:-8px"><rect x="2" y="11" width="22" height="15" rx="2" fill="#ffe066"/></svg>
+          <span>My Game Project</span>
+        </div>
+        <div><svg height="24" width="24" style="vertical-align:-6px"><circle cx="12" cy="12" r="11" fill="#c1eaff"/></svg>
+          <span>Reference.png</span>
+        </div>
+        <div><svg height="24" width="24" style="vertical-align:-6px"><rect x="4" y="4" width="16" height="16" fill="#aaa"/></svg>
+          <span>README.txt</span>
+        </div>
+        <div style="margin-top:14px;color:#567;">Files and folders are simulated.<br>No real file browsing here yet.</div>`;
+        break;
+      case 'settings':
+        winTitle.textContent = "Settings";
+        winContent.innerHTML = `
+          <label><b>Wallpaper Tint:</b>
+            <input type="color" id="wallColor" value="#276ac6"/>
+          </label>
+          <div>Change the system background color.</div>
+          <label style="display:block;margin-top:18px"><b>Night Mode:</b>
+            <input type="checkbox" id="nightModeChk" onchange="document.body.style.background = this.checked?'#1b2236':'#276ac6'">
+          </label>
+          <div style="font-size:13px;color:#567;margin-top:10px;">(Settings are simulated and not permanent.)</div>
+        `;
+        document.getElementById('wallColor').onchange = function(){
+          document.getElementById('wallpaper').style.background = this.value;
+        };
+        break;
+      default:
+        winTitle.textContent = "App";
+        winContent.textContent = "This is a simulated application window.";
+    }
+  }
+  function closeWindow() {
+    document.getElementById('window').style.display = 'none';
+  }
+  document.querySelectorAll('.icon').forEach(elem=>{
+    elem.ondblclick = function(){this.click()};
+  });
+  function shutdownSim(){
+    document.getElementById('window').style.display='none';
+    document.getElementById('startMenu').style.display='none';
+    let o=document.getElementById('shutdownOverlay');
+    o.style.display='flex';
+    setTimeout(()=>{ o.innerHTML='<div style="color:#fff;font-size:2em;margin-top:40vh;text-align:center;">Your PC is now off.<br>Reload to turn it on.</div>'; },1500);
+  }
+  window.onload = function(){
+    let c=["#276ac6","#1d1f30","#4e8ff5","#8ac4ff"];
+    document.getElementById('wallpaper').style.background = c[Math.floor(Math.random()*c.length)];
+  };
 
-    // Try to load first working Piped mirror.
-    async function getWorkingPiped() {
-      // Use the last successful instance (if available)
-      if (ytCurrent) return ytCurrent;
-      for (let inst of PIPED_INSTANCES) {
-        try {
-          let r = await fetch(inst + '/favicon.ico', {mode:'no-cors', cache:'reload'});
-          ytCurrent = inst;
-          return inst;
-        } catch(e){ continue; }
+  /* MINI-BROWSER & API KEY */
+  let USER_API_KEY = null;
+  function showApiPromptIfNeeded(){
+    const prompt = document.getElementById('apiPrompt');
+    if (!USER_API_KEY) prompt.style.display = 'block';
+    else prompt.style.display = 'none';
+    const btn = document.getElementById('apiKeySave');
+    const inp = document.getElementById('apiKeyInput');
+    btn.onclick = () => {
+      USER_API_KEY = inp.value.trim();
+      prompt.style.display = USER_API_KEY ? 'none' : 'block';
+    };
+  }
+  let hist = [], index = -1, iframe = null;
+  function smart(u){
+    u = u.trim();
+    if (/^https?:\/\//i.test(u)) return u;
+    if (/^[\w-]+\.[\w-]+/.test(u)) return 'https://' + u;
+    return `SEARCH:${u}`;
+  }
+  async function brave(q){
+    const API_KEY = USER_API_KEY;
+    if (!API_KEY) {
+      showApiPromptIfNeeded();
+      throw new Error("API key required");
+    }
+    const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(q)}&count=10`;
+    const r = await fetch(url,{
+      headers:{'X-Subscription-Token':API_KEY,'Accept':'application/json'}
+    });
+    if (!r.ok) throw new Error('Search error '+r.status);
+    return (await r.json()).web.results || [];
+  }
+  function initMiniBrowser(){
+    const viewPane = document.getElementById('viewPane');
+    const addr     = document.getElementById('addr');
+    const backBtn  = document.getElementById('backBtn');
+    const fwdBtn   = document.getElementById('fwdBtn');
+    const goBtn    = document.getElementById('goBtn');
+    function setIframe(url){
+      viewPane.innerHTML   = '';
+      iframe               = document.createElement('iframe');
+      iframe.id            = 'browserView';
+      iframe.src           = url;
+      iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:4px';
+      iframe.setAttribute('sandbox',
+          'allow-scripts allow-forms allow-same-origin allow-popups');
+      iframe.onerror = () => showError(url);
+      viewPane.appendChild(iframe);
+    }
+    function showError(url){
+      viewPane.innerHTML =
+        `<div style="padding:1em;font:15px/1.4 sans-serif">
+           This page refuses to run in an iframe.<br>
+           <button onclick="window.open('${url}','_blank')">
+             Open in a real tab
+           </button>
+         </div>`;
+    }
+    async function load(item){
+      if (item.startsWith('SEARCH:')){
+        addr.value = item.slice(7);
+        viewPane.innerHTML = '<div style="padding:1em">Searching…</div>';
+        try{
+          const res = await brave(addr.value);
+          renderResults(res);
+        }catch(e){ showError('Search failed'); }
+        return;
       }
-      return null;
+      addr.value = item;
+      setIframe(item);
     }
-
-    // YouTube video/search mode
-    async function ytMode() {
-      const iframe = document.getElementById('iframePane');
-      const input = document.getElementById('browserInput');
-      // Pick live instance
-      const inst = await getWorkingPiped();
-      if (inst) {
-        input.value = inst;
-        iframe.src = inst;
-      } else {
-        iframe.replaceWith(errorFrame('All YouTube front-ends down.<br><button onclick="window.open(\'https://youtube.com\',\'_blank\')">Open YouTube in new tab</button>'));
-      }
+    function renderResults(arr){
+      const box = document.getElementById('viewPane');
+      box.innerHTML = '';
+      arr.forEach(r=>{
+        const a = document.createElement('a');
+        a.href = '#'; a.textContent = r.title||r.url;
+        a.style.cssText='font-weight:bold;display:block;margin:6px 0';
+        a.onclick = e => { e.preventDefault(); navigate(r.url); };
+        const p = document.createElement('p');
+        p.textContent = r.description || r.snippet || '';
+        p.style.margin='0 0 10px 0';
+        box.append(a,p);
+      });
     }
-
-    function doSearch() {
-      const input = document.getElementById('browserInput');
-      const url = smartURL(input.value);
-      const iframe = document.getElementById('iframePane');
-      iframe.src = url;
-      // error fallback handler
-      iframe.onerror = function() {
-        iframe.replaceWith(errorFrame('This site cannot be embedded.<br><button onclick="window.open(\''+url+'\',\'_blank\')">Open in tab</button>'));
-      };
+    async function navigate(raw){
+      const url = smart(raw);
+      hist   = hist.slice(0,index+1);
+      hist.push(url); index++;
+      updateNav();
+      await load(url);
     }
-
-    function errorFrame(message) {
-      let div = document.createElement('div');
-      div.className = 'errbox';
-      div.innerHTML = message;
-      return div;
+    function updateNav(){
+      backBtn.disabled = index<=0;
+      fwdBtn.disabled  = index>=hist.length-1;
     }
-
-    // On load, always start with a fully embeddable page
-    document.getElementById('iframePane').src = DUCK;
-  </script>
+    backBtn.onclick = ()=>{ if(index>0){ index--; load(hist[index]); updateNav();}};
+    fwdBtn.onclick  = ()=>{ if(index<hist.length-1){ index++; load(hist[index]); updateNav();}};
+    goBtn.onclick   = ()=> navigate(addr.value);
+    addr.onkeydown  = e=>{ if(e.key==='Enter') navigate(addr.value); };
+    addr.focus();
+    navigate('SEARCH:');
+  }
+</script>
 </body>
 </html>
