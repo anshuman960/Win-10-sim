@@ -223,7 +223,14 @@
       }
     });
 
-    // Open window handler
+    // Globals
+    let GOOGLE_KEY = "",
+        GOOGLE_CX = "",
+        YOUTUBE_API_KEY = "",
+        hist = [],
+        idx = -1,
+        currentTab = "web";
+
     function openWindow(which) {
       const win = document.getElementById('window'),
             winContent = document.getElementById('windowContent'),
@@ -541,11 +548,20 @@
         });
       }
 
+      // === Replaced embedYouTubeVideo function with proper sandbox and allow attributes ===
       function embedYouTubeVideo(videoId) {
         const view = document.getElementById("viewPane");
         const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&playsinline=1&autoplay=1`;
-        view.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:360px;border:none;border-radius:6px;" sandbox="allow-scripts allow-forms allow-popups allow-presentation"></iframe>`;
+        view.innerHTML = `
+          <iframe
+            src="${embedUrl}"
+            style="width:100%;height:360px;border:none;border-radius:6px;"
+            sandbox="allow-scripts allow-forms allow-popups allow-presentation"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>`;
       }
+      // === End of replaced embedYouTubeVideo function ===
 
       async function tryEmbed(url) {
         const view = document.getElementById("viewPane");
