@@ -143,9 +143,6 @@
       <div class="icon" onclick="openWindow('browser')">
         <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="19" cy="19" r="18" fill="#5AC8FA"/><path d="M25 25.3C24.7 28.5 21.7 31 16.9 31C11 31 7 25.7 7 20.2C7 15.9 10.8 12 16.7 12C20.4 12 23.2 13.9 24.7 17.1H17.8C14.2 17.1 13.7 21.2 17.3 21.2H31.2V20.6C31.2 13.9 26.1 7.6 16.8 7.6C8.8 7.6 3 13.3 3 20.5C3 28.1 10.2 34 17.8 34C27.1 34 33.5 27.8 33.5 20.2H25V25.3Z" fill="#0078D7"/></svg><span>Edge</span>
       </div>
-      <div class="icon" onclick="openWindow('yt')">
-        <svg viewBox="0 0 50 35"><rect width="50" height="35" rx="7" fill="#FF0000"/><polygon points="20,10 38,17.5 20,25" fill="#fff"/></svg><span>YouTube</span>
-      </div>
       <div class="icon" onclick="openWindow('settings')">
         <svg viewBox="0 0 48 48" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="24" cy="24" r="18" fill="#eee"/><circle cx="24" cy="24" r="7" fill="#0078D7"/><rect x="12" y="23" width="24" height="2" rx="1" fill="#0078D7"/><rect x="23" y="12" width="2" height="24" rx="1" fill="#0078D7"/></svg><span>Settings</span>
       </div>
@@ -159,12 +156,10 @@
     </div>
 
     <div id="startMenu">
-      <div class="header">Start</div><!-- Start Menu Header -->
+      <div class="header">Start</div>
       <ul>
         <li onclick="openWindow('explorer')">File Explorer</li>
         <li onclick="openWindow('browser')">Edge Browser</li>
-        <li onclick="openWindow('yt')">YouTube</li>
-        <li onclick="openWindow('settings')">Settings</li>
         <li onclick="shutdownSim()">Shut Down</li>
       </ul>
     </div>
@@ -218,6 +213,7 @@
       win.style.display = 'flex';
 
       if (which === 'browser') {
+        // Browser with dual API key inputs and search
         winTitle.textContent = "Web Browser";
         winContent.innerHTML = `
           <div id="googleKeyPrompt" style="padding:11px;background:#fff5e1;border-radius:9px;margin-bottom:8px;display:none">
@@ -250,40 +246,13 @@
             <button class="g-tab" data-tab="videos" style="border:none;cursor:pointer;">Videos</button>
             <button class="g-tab" data-tab="news" style="border:none;cursor:pointer;">News</button>
           </div>
-          <div id="viewPane" style="flex:1;overflow:auto;border-radius:6px;box-shadow:0 2px 12px #0003;padding:5px 0;"></div>`;
+          <div id="viewPane" style="flex:1;overflow:auto;border-radius:6px;box-shadow:0 2px 12px #0003;padding:5px 0;"></div>
+        `;
         setupGoogleMiniBrowser();
         return;
       }
 
-      if (which === 'yt') {
-        winTitle.textContent = "YouTube (Invidious)";
-        winContent.innerHTML = `<div id="ytView" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><span>Loading…</span></div>`;
-        (async function() {
-          const mirrors = [
-            'https://invidious.snopyta.org',
-            'https://invidious.kavin.rocks',
-            'https://yewtu.be',
-            'https://piped.video',
-            'https://piped.kavin.rocks'
-          ];
-          let host = null;
-          for (let url of mirrors) {
-            try {
-              await fetch(url + '/favicon.ico', { mode: 'no-cors' });
-              host = url;
-              break;
-            } catch {}
-          }
-          const ytView = document.getElementById('ytView');
-          if (host) {
-            ytView.innerHTML = `<iframe src="${host}/" style="width:100%;height:99%;border:0;border-radius:9px;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`;
-          } else {
-            ytView.innerHTML = `<span>No YouTube mirrors up.<br><button onclick="window.open('https://youtube.com','_blank')">Open YouTube</button></span>`;
-          }
-        })();
-        return;
-      }
-
+      // only explorer and settings remain
       switch (which) {
         case 'explorer':
           winTitle.textContent = "File Explorer";
@@ -293,6 +262,7 @@
             <div><svg height="24" width="24" style="vertical-align:-6px"><rect x="4" y="4" width="16" height="16" fill="#aaa"/></svg> <span>README.txt</span></div>
             <div style="margin-top:14px;color:#567;">Files and folders are simulated.<br>No real file browsing here yet.</div>`;
           break;
+
         case 'settings':
           winTitle.textContent = "Settings";
           winContent.innerHTML = `
@@ -308,6 +278,7 @@
             document.getElementById('wallpaper').style.background = this.value;
           };
           break;
+
         default:
           winTitle.textContent = "App";
           winContent.textContent = "This is a simulated application window.";
@@ -337,8 +308,6 @@
       document.getElementById('wallpaper').style.background = colors[Math.floor(Math.random() * colors.length)];
     };
 
-    // --- Google Mini Browser setup and YouTube video playback ---
-
     let GOOGLE_KEY = "",
         GOOGLE_CX = "",
         YOUTUBE_API_KEY = "",
@@ -346,7 +315,7 @@
         idx = -1,
         currentTab = "web";
 
-    // Google key input handler
+    // Handlers for API key inputs
     function promptGoogleKey() {
       const prompt = document.getElementById('googleKeyPrompt');
       prompt.style.display = "block";
@@ -357,7 +326,6 @@
       };
     }
 
-    // YouTube Data API key input handler
     function promptYouTubeKey() {
       const prompt = document.getElementById('ytKeyPrompt');
       prompt.style.display = "block";
@@ -390,7 +358,7 @@
       return (await r.json()).items || [];
     }
 
-    // Extract YouTube video id from URL
+    // Extract YouTube video ID from URL
     function extractYouTubeID(url) {
       try {
         const u = new URL(url);
@@ -404,23 +372,16 @@
       return null;
     }
 
-    // Fetch YouTube video info from YouTube Data API
-    async function fetchYouTubeVideoInfo(videoId) {
+    async function youtubeSearch(query) {
       if (!YOUTUBE_API_KEY) {
         promptYouTubeKey();
         throw "YouTube API key missing";
       }
-      const url = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=contentDetails,snippet&key=${YOUTUBE_API_KEY}`;
-      const res = await fetch(url);
-      if (!res.ok) throw "YouTube API error " + res.status;
-      const json = await res.json();
-      if (!json.items || !json.items.length) throw "Video not found";
-      return json.items[0];
-    }
-
-    // Check if URL looks like media file
-    function isMediaUrl(url) {
-      return /\.(mp4|webm|ogg|mp3|wav|m4a|flac|aac|mov|avi)$/i.test(url);
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
+      const r = await fetch(url);
+      if (!r.ok) throw "YouTube search error " + r.status;
+      const json = await r.json();
+      return json.items || [];
     }
 
     function setupGoogleMiniBrowser() {
@@ -524,14 +485,6 @@
         }
       }
 
-      async function youtubeSearch(query) {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=15&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}`;
-        const r = await fetch(url);
-        if (!r.ok) throw "YouTube search error " + r.status;
-        const json = await r.json();
-        return json.items || [];
-      }
-
       function renderYouTubeResults(arr) {
         const view = document.getElementById("viewPane");
         view.innerHTML = "";
@@ -542,15 +495,12 @@
         arr.forEach((item) => {
           const videoId = item.id.videoId;
           const title = item.snippet.title;
-          // Thumbnail
           const thumbUrl = (item.snippet.thumbnails.medium || item.snippet.thumbnails.default).url;
-          // Container div
           const container = document.createElement("div");
           container.style.marginBottom = "12px";
           container.style.cursor = "pointer";
           container.style.display = "flex";
           container.style.alignItems = "center";
-          // Thumbnail img
           const img = document.createElement("img");
           img.src = thumbUrl;
           img.alt = title;
@@ -558,12 +508,10 @@
           img.style.height = "70px";
           img.style.objectFit = "cover";
           img.style.marginRight = "12px";
-          // Title
           const titleElem = document.createElement("div");
           titleElem.textContent = title;
           titleElem.style.fontWeight = "bold";
           titleElem.style.flex = "1";
-          // Click loads video embed
           container.onclick = function () {
             embedYouTubeVideo(videoId);
           };
@@ -575,7 +523,6 @@
 
       function embedYouTubeVideo(videoId) {
         const view = document.getElementById("viewPane");
-        // Youtube no-cookie embed URL with autoplay and minimal controls
         const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&playsinline=1&autoplay=1`;
         view.innerHTML = `<iframe src="${embedUrl}" style="width:100%;height:360px;border:none;border-radius:6px;" sandbox="allow-scripts allow-forms allow-popups allow-presentation"></iframe>`;
       }
@@ -584,7 +531,6 @@
         const view = document.getElementById("viewPane");
         view.innerHTML = "";
 
-        // Check YouTube video ID in URL for direct embed
         const vidId = extractYouTubeID(url);
         if (vidId) {
           embedYouTubeVideo(vidId);
@@ -610,7 +556,6 @@
           return;
         }
 
-        // Iframe fallback
         const iframe = document.createElement("iframe");
         iframe.src = url;
         iframe.style.cssText = "width:100%;height:255px;border:none;border-radius:5px";
@@ -681,7 +626,6 @@
         });
       }
 
-      // Initialize input
       addr.value = "";
       addr.focus();
     }
