@@ -191,293 +191,280 @@
     </div>
   </div>
 
-<script>
-  // Clock
-  function clockTick() {
-    let now = new Date(), h = String(now.getHours()).padStart(2,'0'), m = String(now.getMinutes()).padStart(2,'0');
-    document.getElementById('time').textContent = `${h}:${m}`;
-  }
-  setInterval(clockTick, 30000); clockTick();
-
-  // Start menu toggle
-  const startBtn = document.getElementById('startBtn'), startMenu = document.getElementById('startMenu');
-  startBtn.onclick = function(e) {
-    e.stopPropagation();
-    startMenu.style.display = (startMenu.style.display==='block') ? 'none' : 'block';
-  };
-  document.addEventListener('click', function(e) {
-    if (!startMenu.contains(e.target) && e.target!==startBtn) {
-      startMenu.style.display = 'none';
+  <script>
+    // Clock
+    function clockTick() {
+      let now = new Date(), h = String(now.getHours()).padStart(2,'0'), m = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('time').textContent = `${h}:${m}`;
     }
-  });
+    setInterval(clockTick, 30000); clockTick();
 
-  // Window management
-  function openWindow(which) {
-    const win = document.getElementById('window'),
-          winContent = document.getElementById('windowContent'),
-          winTitle = document.getElementById('winTitle');
-    document.getElementById('startMenu').style.display = 'none';
-    win.style.display = 'flex';
-
-    // Browser with Google Programmable Search
-    if (which === 'browser') {
-      winTitle.textContent = "Web Browser";
-      winContent.innerHTML = `
-        <div id="googleKeyPrompt" style="padding:11px;background:#fff5e1;border-radius:9px;margin-bottom:8px;display:none">
-          <b>Google Programmable Search:</b>
-          <br><label>API key <input id="gApiInput" style="width:190px;padding:4px;font-size:13px;"></label>
-          <label style="margin-left:10px">CX <input id="gCxInput" style="width:170px;padding:4px;font-size:13px;"></label>
-          <button id="gKeySave" style="padding:6px 14px;margin-left:8px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer;">Use</button>
-          <div style="font-size:13px;color:#A75;margin-top:4px;">
-            No card needed. <a href="https://developers.google.com/custom-search/v1/introduction" target="_blank" rel="noopener">Get free keys here</a>. Not stored.
-          </div>
-        </div>
-        <div id="browserBar" style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
-          <button id="backBtn" title="Back" disabled>←</button>
-          <button id="fwdBtn"  title="Forward" disabled>→</button>
-          <input  id="addr" style="flex:1;padding:6px 9px;font-size:14px" placeholder="Type a search, URL, or media link…">
-          <button id="goBtn"  style="padding:6px 16px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer">Go</button>
-          <button id="fullScreenBtn" title="Toggle Fullscreen" style="padding:6px 14px;background:#232f54;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-left:6px;">⛶</button>
-        </div>
-        <div id="searchTabs" style="display:flex;gap:7px;margin:2px 0 9px 0;">
-          <button class="g-tab" data-tab="web" style="background:#d8ecff;border-radius:5px;border:1px solid #bcd2f3;cursor:pointer;">Web</button>
-          <button class="g-tab" data-tab="images" style="border:none;cursor:pointer;">Images</button>
-          <button class="g-tab" data-tab="videos" style="border:none;cursor:pointer;">Videos</button>
-          <button class="g-tab" data-tab="news" style="border:none;cursor:pointer;">News</button>
-        </div>
-        <div id="viewPane" style="flex:1;overflow:auto;border-radius:6px;box-shadow:0 2px 12px #0003;padding:5px 0;"></div>`;
-      setupGoogleMiniBrowser();
-      return;
-    }
-    
-    // YouTube using Invidious with mirror fallback
-    if (which === 'yt') {
-      winTitle.textContent = "YouTube (Invidious)";
-      winContent.innerHTML = `<div id="ytView" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><span>Loading…</span></div>`;
-      (async function(){
-        const mirrors = [
-          'https://invidious.snopyta.org',
-          'https://invidious.kavin.rocks',
-          'https://yewtu.be',
-          'https://piped.video',
-          'https://piped.kavin.rocks',
-          'https://invidious.f5.si'
-        ];
-        let host = null;
-        for(let url of mirrors){
-          try { await fetch(url+'/favicon.ico',{mode:'no-cors'}); host = url; break;} catch{}
-        }
-        let ytView = document.getElementById('ytView');
-        if(host){
-          ytView.innerHTML = `<iframe src="${host}/" style="width:100%;height:99%;border:0;border-radius:9px;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`;
-        }else{
-          ytView.innerHTML = `<span>No YouTube mirrors up.<br><button onclick="window.open('https://youtube.com','_blank')">Open YouTube</button></span>`;
-        }
-      })();
-      return;
-    }
-    
-    // Other apps
-    switch(which){
-      case 'explorer':
-        winTitle.textContent = "File Explorer";
-        winContent.innerHTML = `<b>Desktop</b><hr>
-          <div><svg height="28" width="28" style="vertical-align:-8px"><rect x="2" y="11" width="22" height="15" rx="2" fill="#ffe066"/></svg> <span>My Game Project</span></div>
-          <div><svg height="24" width="24" style="vertical-align:-6px"><circle cx="12" cy="12" r="11" fill="#c1eaff"/></svg> <span>Reference.png</span></div>
-          <div><svg height="24" width="24" style="vertical-align:-6px"><rect x="4" y="4" width="16" height="16" fill="#aaa"/></svg> <span>README.txt</span></div>
-          <div style="margin-top:14px;color:#567;">Files and folders are simulated.<br>No real file browsing here yet.</div>`;
-        break;
-      case 'settings':
-        winTitle.textContent = "Settings";
-        winContent.innerHTML = `
-          <label><b>Wallpaper Tint:</b>
-            <input type="color" id="wallColor" value="#276ac6"/>
-          </label>
-          <div>Change the system background color.</div>
-          <label style="display:block;margin-top:18px"><b>Night Mode:</b>
-            <input type="checkbox" id="nightModeChk" onchange="document.body.style.background = this.checked?'#1b2236':'#276ac6'">
-          </label>
-          <div style="font-size:13px;color:#567;margin-top:10px;">(Settings are simulated and not permanent.)</div>`;
-        document.getElementById('wallColor').onchange = function(){
-          document.getElementById('wallpaper').style.background = this.value;
-        };
-        break;
-      default:
-        winTitle.textContent = "App";
-        winContent.textContent = "This is a simulated application window.";
-    }
-  }
-  function closeWindow(){
-    document.getElementById('window').style.display = 'none';
-  }
-  document.querySelectorAll('.icon').forEach(elem => {
-    elem.ondblclick = function(){ this.click(); };
-  });
-  function shutdownSim(){
-    document.getElementById('window').style.display = 'none';
-    document.getElementById('startMenu').style.display = 'none';
-    const overlay = document.getElementById('shutdownOverlay');
-    overlay.style.display = 'flex';
-    setTimeout(() => {
-      overlay.innerHTML = '<div style="color:#fff;font-size:2em;margin-top:40vh;text-align:center;">Your PC is now off.<br>Reload to turn it on.</div>';
-    }, 1500);
-  }
-  window.onload = function(){
-    const colors = ["#276ac6","#1d1f30","#4e8ff5","#8ac4ff"];
-    document.getElementById('wallpaper').style.background = colors[Math.floor(Math.random()*colors.length)];
-  };
-
-  // --- Google Mini Browser setup ---
-  let GOOGLE_KEY = "", GOOGLE_CX = "", hist = [], idx = -1, currentTab = "web";
-
-  function promptGoogleKey() {
-    const prompt = document.getElementById('googleKeyPrompt');
-    prompt.style.display = "block";
-    document.getElementById('gKeySave').onclick = function() {
-      GOOGLE_KEY = document.getElementById('gApiInput').value.trim();
-      GOOGLE_CX  = document.getElementById('gCxInput').value.trim();
-      prompt.style.display = (GOOGLE_KEY && GOOGLE_CX) ? "none" : "block";
-    }
-  }
-
-  function buildGoogleUrl(q, tab) {
-    let params = ["key=" + encodeURIComponent(GOOGLE_KEY), "cx=" + encodeURIComponent(GOOGLE_CX), "q=" + encodeURIComponent(q)];
-    if (tab === "images") params.push("searchType=image");
-    if (tab === "news") params.push("num=10", "gl=us", "sort=date", "dateRestrict=d1");
-    if (tab === "videos") params.push("siteSearch=youtube.com");
-    return "https://www.googleapis.com/customsearch/v1?" + params.join("&");
-  }
-
-  async function googleSearch(q, tab) {
-    if (!GOOGLE_KEY || !GOOGLE_CX) {
-      promptGoogleKey();
-      throw "API key/CX missing";
-    }
-    const url = buildGoogleUrl(q, tab || "web");
-    const r = await fetch(url);
-    if (!r.ok) throw "Search error " + r.status;
-    return (await r.json()).items || [];
-  }
-
-  function isMediaUrl(url) {
-    return /\.(mp4|webm|ogg|mp3|wav|m4a|flac|aac|mov|avi)$/i.test(url);
-  }
-
-  function setupGoogleMiniBrowser() {
-    const addr = document.getElementById('addr'),
-          backBtn = document.getElementById('backBtn'),
-          fwdBtn = document.getElementById('fwdBtn'),
-          goBtn = document.getElementById('goBtn'),
-          view = document.getElementById('viewPane'),
-          fullScreenBtn = document.getElementById('fullScreenBtn'),
-          win = document.getElementById('window');
-    const tabs = document.querySelectorAll('.g-tab');
-
-    hist = [];
-    idx = -1;
-    currentTab = "web";
-    let isFullscreen = false;
-
-    fullScreenBtn.onclick = () => {
-      if (!isFullscreen) {
-        win.classList.add('fullscreen');
-        isFullscreen = true;
-        fullScreenBtn.textContent = '🞬';
-      } else {
-        win.classList.remove('fullscreen');
-        isFullscreen = false;
-        fullScreenBtn.textContent = '⛶';
-      }
+    // Start menu toggle
+    const startBtn = document.getElementById('startBtn'), startMenu = document.getElementById('startMenu');
+    startBtn.onclick = function(e) {
+      e.stopPropagation();
+      startMenu.style.display = (startMenu.style.display==='block') ? 'none' : 'block';
     };
-
-    function goTo(item) {
-      hist = hist.slice(0, idx + 1);
-      hist.push(item);
-      idx++;
-      updateNav();
-      load(item);
-    }
-
-    function updateNav() {
-      backBtn.disabled = idx <= 0;
-      fwdBtn.disabled = idx >= hist.length - 1;
-    }
-
-    backBtn.onclick = () => {
-      if (idx > 0) {
-        idx--;
-        load(hist[idx]);
-        updateNav();
+    document.addEventListener('click', function(e) {
+      if (!startMenu.contains(e.target) && e.target!==startBtn) {
+        startMenu.style.display = 'none';
       }
-    };
-    fwdBtn.onclick = () => {
-      if (idx < hist.length - 1) {
-        idx++;
-        load(hist[idx]);
-        updateNav();
-      }
-    };
-
-    tabs.forEach(btn => btn.onclick = () => {
-      tabs.forEach(b => b.style.background = "");
-      btn.style.background = "#d8ecff";
-      currentTab = btn.dataset.tab;
-      goBtn.click();
     });
-    // Initialize first tab UI
-    tabs.forEach(b => b.style.background = "");
-    tabs[0].style.background = "#d8ecff";
 
-    goBtn.onclick = () => handle(addr.value);
-    addr.onkeydown = e => { if (e.key === "Enter") handle(addr.value); };
+    // Window management
+    function openWindow(which) {
+      const win = document.getElementById('window'),
+            winContent = document.getElementById('windowContent'),
+            winTitle = document.getElementById('winTitle');
+      document.getElementById('startMenu').style.display = 'none';
+      win.style.display = 'flex';
 
-    function handle(val) {
-      val = val.trim();
-      if (/^(https?:\/\/)/i.test(val) || /^[\w-]+\.[\w-]+/.test(val)) {
-        tryEmbed(val.startsWith('http') ? val : 'https://' + val);
+      // Browser with Google Programmable Search
+      if (which === 'browser') {
+        winTitle.textContent = "Web Browser";
+        winContent.innerHTML = `
+          <div id="googleKeyPrompt" style="padding:11px;background:#fff5e1;border-radius:9px;margin-bottom:8px;display:none">
+            <b>Google Programmable Search:</b>
+            <br><label>API key <input id="gApiInput" style="width:190px;padding:4px;font-size:13px;"></label>
+            <label style="margin-left:10px">CX <input id="gCxInput" style="width:170px;padding:4px;font-size:13px;"></label>
+            <button id="gKeySave" style="padding:6px 14px;margin-left:8px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer;">Use</button>
+            <div style="font-size:13px;color:#A75;margin-top:4px;">
+              No card needed. <a href="https://developers.google.com/custom-search/v1/introduction" target="_blank" rel="noopener">Get free keys here</a>. Not stored.
+            </div>
+          </div>
+          <div id="browserBar" style="display:flex;gap:6px;margin-bottom:6px;align-items:center">
+            <button id="backBtn" title="Back" disabled>←</button>
+            <button id="fwdBtn"  title="Forward" disabled>→</button>
+            <input  id="addr" style="flex:1;padding:6px 9px;font-size:14px" placeholder="Type a search, URL, or media link…">
+            <button id="goBtn"  style="padding:6px 16px;background:#0078d7;color:#fff;border:none;border-radius:6px;cursor:pointer">Go</button>
+            <button id="fullScreenBtn" title="Toggle Fullscreen" style="padding:6px 14px;background:#232f54;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-left:6px;">⛶</button>
+          </div>
+          <div id="searchTabs" style="display:flex;gap:7px;margin:2px 0 9px 0;">
+            <button class="g-tab" data-tab="web" style="background:#d8ecff;border-radius:5px;border:1px solid #bcd2f3;cursor:pointer;">Web</button>
+            <button class="g-tab" data-tab="images" style="border:none;cursor:pointer;">Images</button>
+            <button class="g-tab" data-tab="videos" style="border:none;cursor:pointer;">Videos</button>
+            <button class="g-tab" data-tab="news" style="border:none;cursor:pointer;">News</button>
+          </div>
+          <div id="viewPane" style="flex:1;overflow:auto;border-radius:6px;box-shadow:0 2px 12px #0003;padding:5px 0;"></div>`;
+        setupGoogleMiniBrowser();
         return;
       }
-      searchTab(val, currentTab);
-    }
 
-    async function searchTab(q, tab) {
-      view.innerHTML = "<div style='padding:14px'>Loading…</div>";
-      try {
-        const results = await googleSearch(q, tab);
-        renderGoogleResults(results, tab);
-      } catch (e) {
-        view.innerHTML = `<div style="padding:12px;font-size:15px">Search failed: ${e}</div>`;
+      // YouTube using Invidious with mirror fallback
+      if (which === 'yt') {
+        winTitle.textContent = "YouTube (Invidious)";
+        winContent.innerHTML = `<div id="ytView" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><span>Loading…</span></div>`;
+        (async function(){
+          const mirrors = [
+            'https://invidious.snopyta.org',
+            'https://invidious.kavin.rocks',
+            'https://yewtu.be',
+            'https://piped.video',
+            'https://piped.kavin.rocks',
+            'https://invidious.f5.si'
+          ];
+          let host = null;
+          for(let url of mirrors){
+            try { await fetch(url+'/favicon.ico',{mode:'no-cors'}); host = url; break;} catch{}
+          }
+          let ytView = document.getElementById('ytView');
+          if(host){
+            ytView.innerHTML = `<iframe src="${host}/" style="width:100%;height:99%;border:0;border-radius:9px;" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`;
+          }else{
+            ytView.innerHTML = `<span>No YouTube mirrors up.<br><button onclick="window.open('https://youtube.com','_blank')">Open YouTube</button></span>`;
+          }
+        })();
+        return;
+      }
+
+      // Other apps
+      switch(which){
+        case 'explorer':
+          winTitle.textContent = "File Explorer";
+          winContent.innerHTML = `<b>Desktop</b><hr>
+            <div><svg height="28" width="28" style="vertical-align:-8px"><rect x="2" y="11" width="22" height="15" rx="2" fill="#ffe066"/></svg> <span>My Game Project</span></div>
+            <div><svg height="24" width="24" style="vertical-align:-6px"><circle cx="12" cy="12" r="11" fill="#c1eaff"/></svg> <span>Reference.png</span></div>
+            <div><svg height="24" width="24" style="vertical-align:-6px"><rect x="4" y="4" width="16" height="16" fill="#aaa"/></svg> <span>README.txt</span></div>
+            <div style="margin-top:14px;color:#567;">Files and folders are simulated.<br>No real file browsing here yet.</div>`;
+          break;
+        case 'settings':
+          winTitle.textContent = "Settings";
+          winContent.innerHTML = `
+            <label><b>Wallpaper Tint:</b>
+              <input type="color" id="wallColor" value="#276ac6"/>
+            </label>
+            <div>Change the system background color.</div>
+            <label style="display:block;margin-top:18px"><b>Night Mode:</b>
+              <input type="checkbox" id="nightModeChk" onchange="document.body.style.background = this.checked?'#1b2236':'#276ac6'">
+            </label>
+            <div style="font-size:13px;color:#567;margin-top:10px;">(Settings are simulated and not permanent.)</div>`;
+          document.getElementById('wallColor').onchange = function(){
+            document.getElementById('wallpaper').style.background = this.value;
+          };
+          break;
+        default:
+          winTitle.textContent = "App";
+          winContent.textContent = "This is a simulated application window.";
+      }
+    }
+    function closeWindow(){
+      document.getElementById('window').style.display = 'none';
+    }
+    document.querySelectorAll('.icon').forEach(elem => {
+      elem.ondblclick = function(){ this.click(); };
+    });
+    function shutdownSim(){
+      document.getElementById('window').style.display = 'none';
+      document.getElementById('startMenu').style.display = 'none';
+      const overlay = document.getElementById('shutdownOverlay');
+      overlay.style.display = 'flex';
+      setTimeout(() => {
+        overlay.innerHTML = '<div style="color:#fff;font-size:2em;margin-top:40vh;text-align:center;">Your PC is now off.<br>Reload to turn it on.</div>';
+      }, 1500);
+    }
+    window.onload = function(){
+      const colors = ["#276ac6","#1d1f30","#4e8ff5","#8ac4ff"];
+      document.getElementById('wallpaper').style.background = colors[Math.floor(Math.random()*colors.length)];
+    };
+
+    // --- Google Mini Browser setup ---
+    let GOOGLE_KEY = "", GOOGLE_CX = "", hist = [], idx = -1, currentTab = "web";
+
+    function promptGoogleKey() {
+      const prompt = document.getElementById('googleKeyPrompt');
+      prompt.style.display = "block";
+      document.getElementById('gKeySave').onclick = function() {
+        GOOGLE_KEY = document.getElementById('gApiInput').value.trim();
+        GOOGLE_CX  = document.getElementById('gCxInput').value.trim();
+        prompt.style.display = (GOOGLE_KEY && GOOGLE_CX) ? "none" : "block";
       }
     }
 
-    function tryEmbed(url) {
-      view.innerHTML = '';
-      if (isMediaUrl(url)) {
-        let media;
-        if (/\.(mp4|webm|mov|avi)$/i.test(url)) {
-          media = document.createElement('video');
-          media.controls = true;
-          media.autoplay = true;
-          media.style.width = '100%';
-          media.style.height = 'auto';
-        } else {
-          media = document.createElement('audio');
-          media.controls = true;
-          media.autoplay = true;
-          media.style.width = '100%';
+    function buildGoogleUrl(q, tab) {
+      let params = ["key=" + encodeURIComponent(GOOGLE_KEY), "cx=" + encodeURIComponent(GOOGLE_CX), "q=" + encodeURIComponent(q)];
+      if (tab === "images") params.push("searchType=image");
+      if (tab === "news") params.push("num=10", "gl=us", "sort=date", "dateRestrict=d1");
+      if (tab === "videos") params.push("siteSearch=youtube.com");
+      return "https://www.googleapis.com/customsearch/v1?" + params.join("&");
+    }
+
+    async function googleSearch(q, tab) {
+      if (!GOOGLE_KEY || !GOOGLE_CX) {
+        promptGoogleKey();
+        throw "API key/CX missing";
+      }
+      const url = buildGoogleUrl(q, tab || "web");
+      const r = await fetch(url);
+      if (!r.ok) throw "Search error " + r.status;
+      return (await r.json()).items || [];
+    }
+
+    // Helper: Extract YouTube video ID from URL
+    function extractYouTubeID(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtube.com') || u.hostname.includes('youtu.be')) {
+          if (u.searchParams.has('v')) return u.searchParams.get('v');
+          if (u.hostname === 'youtu.be') return u.pathname.slice(1);
         }
-        media.src = url;
-        view.appendChild(media);
-      } else {
-        const iframe = document.createElement('iframe');
-        iframe.src = url;
-        iframe.style.cssText = 'width:100%;height:255px;border:none;border-radius:5px';
-        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
-        iframe.onerror = () => failIframe(url);
-        setTimeout(() => {
-          try {
-            if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML === '') failIframe(url);
-          } catch {
-            // ignore cross-origin errors
+      } catch {
+        // Not a valid URL
+      }
+      return null;
+    }
+
+    // Fetch live Invidious instances from API and find a working one with video API available
+    async function getWorkingInvidious(videoId) {
+      try {
+        const res = await fetch('https://api.invidious.io/instances.json?sort_by=type,health');
+        const instances = await res.json();
+        for (const [url, info] of instances) {
+          if (info.type === 'https' && info.api && info.health > 85) {
+            try {
+              const apiRes = await fetch(`${url}/api/v1/videos/${videoId}`);
+              if (apiRes.ok) {
+                const data = await apiRes.json();
+                if (data && Array.isArray(data.adaptiveFormats) && data.adaptiveFormats.length) {
+                  return { host: url, formats: data.adaptiveFormats };
+                }
+              }
+            } catch { continue; }
           }
-   
+        }
+      } catch {
+        // Network or fetch error
+      }
+      return null;
+    }
+
+    function isMediaUrl(url) {
+      return /\.(mp4|webm|ogg|mp3|wav|m4a|flac|aac|mov|avi)$/i.test(url);
+    }
+
+    function setupGoogleMiniBrowser() {
+      const addr = document.getElementById('addr'),
+            backBtn = document.getElementById('backBtn'),
+            fwdBtn = document.getElementById('fwdBtn'),
+            goBtn = document.getElementById('goBtn'),
+            view = document.getElementById('viewPane'),
+            fullScreenBtn = document.getElementById('fullScreenBtn'),
+            win = document.getElementById('window');
+      const tabs = document.querySelectorAll('.g-tab');
+
+      hist = [];
+      idx = -1;
+      currentTab = "web";
+      let isFullscreen = false;
+
+      fullScreenBtn.onclick = () => {
+        if (!isFullscreen) {
+          win.classList.add('fullscreen');
+          isFullscreen = true;
+          fullScreenBtn.textContent = '🞬';
+        } else {
+          win.classList.remove('fullscreen');
+          isFullscreen = false;
+          fullScreenBtn.textContent = '⛶';
+        }
+      };
+
+      function goTo(item) {
+        hist = hist.slice(0, idx + 1);
+        hist.push(item);
+        idx++;
+        updateNav();
+        load(item);
+      }
+
+      function updateNav() {
+        backBtn.disabled = idx <= 0;
+        fwdBtn.disabled = idx >= hist.length - 1;
+      }
+
+      backBtn.onclick = () => {
+        if (idx > 0) {
+          idx--;
+          load(hist[idx]);
+          updateNav();
+        }
+      };
+      fwdBtn.onclick = () => {
+        if (idx < hist.length - 1) {
+          idx++;
+          load(hist[idx]);
+          updateNav();
+        }
+      };
+
+      tabs.forEach(btn => btn.onclick = () => {
+        tabs.forEach(b => b.style.background = "");
+        btn.style.background = "#d8ecff";
+        currentTab = btn.dataset.tab;
+        goBtn.click();
+      });
+      // Initialize first tab UI
+      tabs.forEach(b => b.style.background = "");
+      tabs[0].style.background = "#d8ecff";
+
+      goBtn.onclick = () => handle(addr.value);
+      addr.on
